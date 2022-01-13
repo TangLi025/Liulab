@@ -12,7 +12,7 @@ CHROM_SIZE="/disk1/home/user_09/reference/annotation/hg19/hg19.chrom.sizes"
 
 rule all:
   input:
-    #expand("05_bedtools/{sample}_{treatment}_{rep}_ext.bw",sample=SAMPLE,treatment=TREATMENT,rep=REP),
+    #,
     #expand("06_macs2/{sample}_{rep}_peaks.xls",sample=SAMPLE,rep=REP),
     #expand("06_macs2/{sample}_{rep}_peaks.broadPeak",sample=SAMPLE,rep=REP),
     #expand("06_macs2/{sample}_{rep}_peaks_shuffled.broadPeak",sample=SAMPLE,rep=REP),
@@ -31,6 +31,20 @@ rule genome_index:
     GENOME_INDEX
   shell:
     "/disk1/home/user_09/anaconda3/envs/m6A/bin/samtools faidx {input}"
+
+
+rule bedGraphToBigWig:
+  input:
+    "05_bedtools/bedGraph/KAS-seq_{group}_{sample}_{treatment}_{rep}_ext.bg",
+    GENOME_INDEX
+  output:
+    "05_bedtools/bigWig/KAS-seq_{group}_{sample}_{treatment}_{rep}_ext.bw"
+  log:
+    "logs/bedGraphToBigWig/KAS-seq_{group}_{sample}_{treatment}_{rep}.log"
+  threads: 1
+  shell:
+    "/disk1/home/user_09/anaconda3/envs/bedtools/bin/bedGraphToBigWig {input[0]}\
+      {input[1]} {output} > {log} 2>&1"
 
 
 rule bed_merge:

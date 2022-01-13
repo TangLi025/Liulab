@@ -60,49 +60,6 @@ rule bam_index:
   shell:
     "/disk1/home/user_09/anaconda3/envs/LinLong/bin/samtools index -@ {threads} {input} > {log} 2>&1"
  
-rule bamCoverage:
-  input:
-    bam="04_bam_rmdup/{sample}_{treatment}_{rep}.bam",
-    index="04_bam_rmdup/{sample}_{treatment}_{rep}.bam.bai"
-  output:
-    bw="07_deeptools/bamCoverage/{sample}_{treatment}_{rep}.bw"
-  log:
-    "logs/bamCoverage/{sample}_{treatment}_{rep}.log"
-  params:
-    blacklist=BLACKLIST
-  threads:15
-  shell:
-    "/disk1/home/user_09/anaconda3/envs/deeptools/bin/bamCoverage \
-      --bam {input.bam} --outFileName {output.bw} \
-      --outFileFormat bigwig \
-      --binSize 50 \
-      --normalizeUsing None \
-      --numberOfProcessors {threads} \
-      --effectiveGenomeSize 2864785220 \
-      --extendReads 150 \
-      > {log} 2>&1"
-
-rule plotFingerprint:
-  input:
-    "04_bam_{dup}/{sample}_input_rep1.bam",
-    "04_bam_{dup}/{sample}_input_rep2.bam",
-    "04_bam_{dup}/{sample}_IP_rep1.bam",
-    "04_bam_{dup}/{sample}_IP_rep2.bam"
-  output:
-    "07_deeptools/plotFingerprint/{sample}_KAS-seq_plotFingerprint_{dup}.png"
-  log:
-    "logs/plotFingerprint/{sample}_KAS-seq_plotFingerprint_{dup}.log"
-  params:
-    labels=expand("{samples}_{rep}",samples=["input","KAS-seq"],rep=REP),
-    title="""Fingerprints of KAS-seq data"""
-  threads: 25
-  shell:
-    "/disk1/home/user_09/anaconda3/envs/deeptools/bin/plotFingerprint \
-      -b {input} -o {output} \
-      --extendReads 150 --labels {params.labels} \
-      --binSize 500 \
-      --numberOfProcessors {threads} > {log} 2>&1"
-      
 rule computeGCBias:
   input:
     bam="04_bam_{dup}/{sample}_{treatment}_{rep}.bam",

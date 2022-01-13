@@ -8,7 +8,8 @@ GENOME="/disk1/home/user_09/reference/genome/GRCm39.genome.fa"
 GENOME_INDEX="/disk1/home/user_09/reference/genome/GRCm39.genome.fa.fai"
 
 rule all:
-  expand("05_bedtools/bigWig/KAS-seq_{group}_{sample}_{treatment}_{rep}_ext.bw",group=GROUP,sample=SAMPLE,treatment=TREATMENT,rep=REP)
+  input:
+    expand("05_bedtools/bedGraph/KAS-seq_{group}_{sample}_{treatment}_{rep}_ext.bg",group=GROUP,sample=SAMPLE,treatment=TREATMENT,rep=REP)
   
   
 rule genome_index:
@@ -39,9 +40,10 @@ rule bed_extend:
   log:
     "logs/bed_extend/KAS-seq_{group}_{sample}_{treatment}_{rep}.log"
   shell:
-    "awk '$3-150>0 {if ($6~"+") printf("%s\t%d\t%d\t%s\t%d\t%s\n",$1,$2,$2+150,$4,$5,$6); \
-      else if ($6~"-") printf("%s\t%d\t%d\t%s\t%d\t%s\n",$1,$3-150,$3,$4,$5,$6)}' \
-      {input} 1> {output} 2> {log}"
+    r"""
+    awk '$3-150>0 {{if ($6~"+") printf("%s\t%d\t%d\t%s\t%d\t%s\n",$1,$2,$2+150,$4,$5,$6); else if ($6~"-") printf("%s\t%d\t%d\t%s\t%d\t%s\n",$1,$3-150,$3,$4,$5,$6)}}' \
+      {input} 1> {output} 2> {log}
+    """
 
 rule bed2bedGraph:
   input:
@@ -56,16 +58,3 @@ rule bed2bedGraph:
     "/disk1/home/user_09/anaconda3/envs/bedtools/bin/bedtools genomecov -i {input[0]} \
       -bg -g {input[1]} \
       | /disk1/home/user_09/anaconda3/envs/bedtools/bin/bedtools sort -i 1> {output} 2> {log}"
-
-rule bedGraphToBigWig:
-  input:
-    "05_bedtools/bedGraph/KAS-seq_{group}_{sample}_{treatment}_{rep}_ext.bg",
-    GENOME_INDEX
-  output:
-    "05_bedtools/bigWig/KAS-seq_{group}_{sample}_{treatment}_{rep}_ext.bw"
-  log:
-    "logs/bedGraphToBigWig/KAS-seq_{group}_{sample}_{treatment}_{rep}.log"
-  threads: 1
-  shell:
-    "/disk1/home/user_09/anaconda3/envs/bedtools/bin/bedGraphToBigWig {input[0]}\
-      {input[1]} {output} > {log} 2>&1"

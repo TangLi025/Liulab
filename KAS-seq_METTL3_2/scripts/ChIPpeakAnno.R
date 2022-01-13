@@ -1,29 +1,40 @@
 library(ChIPpeakAnno)
 
-bed1 <- "~/KAS/TI_KAS-seq/06_macs2/bed_merge/DMSO_common_peaks.broadPeak"
-bed2 <- "~/KAS/TI_KAS-seq/06_macs2/bed_merge/DRB_common_peaks.broadPeak"
-bed3 <- "~/KAS/TI_KAS-seq/06_macs2/bed_merge/TRIP_common_peaks.broadPeak"
+CTRL_bed1 <- "~/KAS-METTL/METTL3_2/06_macs2/broad/KAS-seq_METTL3_2_CTRL_rep1_peaks.broadPeak"
+CTRL_bed2 <- "~/KAS-METTL/METTL3_2/06_macs2/broad/KAS-seq_METTL3_2_CTRL_rep2_peaks.broadPeak"
 
-Native <- ChIPpeakAnno::toGRanges(bed1, format="BED", header=FALSE)
-DRB <- ChIPpeakAnno::toGRanges(bed2, format="BED", header=FALSE)
-Triptolide <- ChIPpeakAnno::toGRanges(bed3, format="BED", header=FALSE)
+KO_bed1 <- "~/KAS-METTL/METTL3_2/06_macs2/broad/KAS-seq_METTL3_2_KO_rep1_peaks.broadPeak"
+KO_bed2 <- "~/KAS-METTL/METTL3_2/06_macs2/broad/KAS-seq_METTL3_2_KO_rep2_peaks.broadPeak"
 
+CTRL_1 <- ChIPpeakAnno::toGRanges(CTRL_bed1, format="BED", header=FALSE)
+CTRL_2 <- ChIPpeakAnno::toGRanges(CTRL_bed2, format="BED", header=FALSE)
+KO_1 <- ChIPpeakAnno::toGRanges(KO_bed1, format="BED", header=FALSE)
+KO_2 <- ChIPpeakAnno::toGRanges(KO_bed2, format="BED", header=FALSE)
 
 
 ## must keep the class exactly same as gr1$score, i.e., numeric.
-Native$score <- as.numeric(Native$score) 
-DRB$score <- as.numeric(DRB$score) 
-Triptolide$score <- as.numeric(Triptolide$score) 
-ol <- findOverlapsOfPeaks(Native, DRB,Triptolide)
-## add metadata (mean of score) to the overlapping peaks
-ol <- addMetadata(ol, colNames="score", FUN=mean) 
-ol$peaklist[["rep1///rep2"]][1:2]
+CTRL$score <- as.numeric(CTRL$score) 
+KO$score <- as.numeric(KO$score) 
+ol_CTRL <- findOverlapsOfPeaks(CTRL_1, CTRL_2)
 
-makeVennDiagram(ol, fill=c("#a1d8b1", "#edfcc2","#f88aaf"), # circle fill color
-                col=c("#D55E00", "#0072B2","#f88aaf"), #circle border color
-                cat.col=c("#D55E00", "#0072B2","#f88aaf"),# label color, keep same as circle border color
+
+ol_KO <- findOverlapsOfPeaks(KO_1, KO_2)
+## add metadata (mean of score) to the overlapping peaks
+ol_CTRL <- addMetadata(ol_CTRL, colNames="score", FUN=mean) 
+ol_CTRL$peaklist[["CTRL_1///CTRL_2"]]
+CTRL <- ol_CTRL$peaklist[["CTRL_1///CTRL_2"]]
+KO <- ol_KO$peaklist[["KO_1///KO_2"]]
+
+ol <- findOverlapsOfPeaks(CTRL, KO)
+
+
+makeVennDiagram(ol, fill=c("#a1d8b1", "#edfcc2"), # circle fill color
+                col=c("#D55E00", "#0072B2"), #circle border color
+                cat.col=c("#D55E00", "#0072B2"),# label color, keep same as circle border color
                 cex=3,
                 cat.cex=2) 
+
+
 
 library(EnsDb.Hsapiens.v75)
 annoData <- toGRanges(EnsDb.Hsapiens.v75, feature="gene")
