@@ -1,15 +1,29 @@
 GROUP=["METTL3"]
-SAMPLE=["CTRL","KO"]
+SAMPLE=["CTRL","KO1","KO2"]
 TREATMENT=["input","IP"]
 REP=["rep1","rep2"]
 READ=["1","2"]
 
 rule all:
   input:
-    "01_fastqc1/multiqc1/multiqc_report.html",
-    expand("02_trim_galore/{sample}_{treatment}_{rep}_{read}.fastq",sample=SAMPLE,treatment=TREATMENT,rep=REP,read=READ),
-    "03_fastqc2/multiqc2/multiqc_report.html"
-    
+    expand("00_raw_fastq/{group}_{sample}_{treatment}_{rep}_1.fastq",group=GROUP,sample=SAMPLE,treatment=TREATMENT,rep-REP)
+    #"01_fastqc1/multiqc1/multiqc_report.html",
+    #expand("02_trim_galore/{sample}_{treatment}_{rep}_{read}.fastq",sample=SAMPLE,treatment=TREATMENT,rep=REP,read=READ),
+    #"03_fastqc2/multiqc2/multiqc_report.html"
+
+rule fasterq_dump:
+  input:
+    "00_raw_sra/{group}_{sample}_{treatment}_{rep}.sra"
+  output:
+    "00_raw_fastq/{group}_{sample}_{treatment}_{rep}_1.fastq",
+    "00_raw_fastq/{group}_{sample}_{treatment}_{rep}_2.fastq"
+  log:
+    "logs/fasterq_dump/{sample}_{treatment}_{rep}.log"
+  threads:10
+  shell:
+     "/disk1/home/user_09/anaconda3/envs/m6A/bin/fasterq-dump -e {threads} --split-3 -O 00_raw_fastq {input} > {log} 2>&1"
+
+"""  
 rule fastqc1:
   input:
     "00_raw_fastq/{sample}_{treatment}_{rep}_{read}.fq.gz"
@@ -21,7 +35,7 @@ rule fastqc1:
   threads: 4
   shell:
     "/disk1/home/user_09/anaconda3/envs/LinLong/bin/fastqc -t {threads} -q -o 01_fastqc1 {input} > {log} 2>&1"
-    
+
 rule multiqc1:
   input:
     expand("01_fastqc1/{sample}_{treatment}_{rep}_{read}_fastqc.html",sample=SAMPLE,treatment=TREATMENT,rep=REP,read=READ),
@@ -73,4 +87,4 @@ rule multiqc2:
   shell:
     "/disk1/home/user_09/anaconda3/envs/LinLong/bin/multiqc {input} \
       -o 03_fastqc2/multiqc2 > {log} 2>&1"
-    
+"""

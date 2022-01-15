@@ -1,4 +1,4 @@
-GROUP=["METTL3_2"]
+GROUP=["METTL3_1","METTL3_3","METTL14","YTHDC1"]
 SAMPLE=["CTRL","KO"]
 
 TREATMENT=["input","IP"]
@@ -7,78 +7,28 @@ REP=["rep1","rep2"]
 GENOME="/disk1/home/user_09/reference/genome/GRCm39.genome.fa"
 GENOME_INDEX="/disk1/home/user_09/reference/genome/GRCm39.genome.fa.fai"
 
-REFSEQ="/disk1/home/user_09/reference/annotation/mm19/mm19_Refseq.bed"
+REFSEQ="/disk1/home/user_09/reference/annotation/mm19/gencode.vM28.annotation.lncRNA.gtf"
 
 BLACKLIST="/disk1/home/user_09/reference/annotation/mm19/mm19.blacklist.bed"
 
 rule all:
   input:
-    expand("{group}/05_bedtools/bigWig/KAS-seq_{group}_{sample}_{treatment}_{rep}_ext.bw",group=GROUP,sample=SAMPLE,treatment=TREATMENT,rep=REP),
-    expand("{group}/07_deeptools/computeMatrix/{group}.mat.gz",group=GROUP),
-    expand("{group}/07_deeptools/plotProfile/{group}.png",group=GROUP),
-    expand("{group}/07_deeptools/plotHeatmap/{group}.png",group=GROUP),
-    expand("{group}/07_deeptools/plotPCA/{group}.png",group=GROUP),
-    expand("{group}/07_deeptools/plotProfile/{group}_{type}.png",group=GROUP,type=["TSS","TES"]),
-    expand("{group}/07_deeptools/plotProfile/peak_{group}.png",group=GROUP)
-
-rule computeMatrix_distribution_peak:
-  input:
-    bw=expand("{group}/05_bedtools/bigWig/KAS-seq_{group}_{sample}_IP_{rep}_ext.bw",group=r'{group}',sample=SAMPLE,rep=REP)
-  output:
-    mat="{group}/07_deeptools/computeMatrix/peak_{group}.mat.gz",
-    tab="{group}/07_deeptools/computeMatrix/peak_{group}.tab",
-    bed="{group}/07_deeptools/computeMatrix/peak_{group}.bed"
-  log:
-    "{group}/logs/computeMatrix_distribution/peak_{group}.log"
-  params:
-    type="center",
-    blacklist=BLACKLIST,
-  threads: 50
-  shell:
-    "/disk1/home/user_09/anaconda3/envs/deeptools/bin/computeMatrix reference-point \
-      --regionsFileName {wildcards.group}/06_macs2/broad/KAS-seq_{wildcards.group}_CTRL_common_nomodel_peaks.broadPeak \
-        {wildcards.group}/06_macs2/broad/KAS-seq_{wildcards.group}_KO_common_nomodel_peaks.broadPeak \
-      --scoreFileName {input.bw} \
-      --outFileName {output.mat} \
-      --outFileNameMatrix {output.tab} \
-      --outFileSortedRegions {output.bed} \
-      --referencePoint {params.type} \
-      --beforeRegionStartLength 5000  \
-      --afterRegionStartLength 5000 \
-      --binSize 10 \
-      --skipZeros \
-      --blackListFileName {params.blacklist} \
-      --smartLabels \
-      --numberOfProcessors {threads} \
-      --missingDataAsZero \
-       > {log} 2>&1"
-
-rule plotProfile_peak:
-  input:
-    mat="{group}/07_deeptools/computeMatrix/peak_{group}.mat.gz"
-  output:
-    png="{group}/07_deeptools/plotProfile/peak_{group}.png"
-  log:
-    "{group}/logs/plotProfile/{group}_peak.log"
-  params:
-    genes="genes"
-  threads: 1
-  shell:
-    "/disk1/home/user_09/anaconda3/envs/deeptools/bin/plotProfile \
-      --perGroup \
-      --matrixFile {input.mat} \
-      --outFileName {output.png} \
-       > {log} 2>&1"   
+    expand("{group}/07_deeptools/computeMatrix/{group}_lncRNA.mat.gz",group=GROUP),
+    expand("{group}/07_deeptools/plotProfile/{group}_lncRNA.png",group=GROUP),
+    expand("{group}/07_deeptools/plotHeatmap/{group}_lncRNA.png",group=GROUP),
+    expand("{group}/07_deeptools/plotPCA/{group}_lncRNA.png",group=GROUP),
+    expand("{group}/07_deeptools/plotProfile/{group}_{type}_lncRNA.png",group=GROUP,type=["TSS","TES"])
+    
     
 rule computeMatrix_distribution_TSS_TES:
   input:
     bw=expand("{group}/05_bedtools/bigWig/KAS-seq_{group}_{sample}_IP_{rep}_ext.bw",group=r'{group}',sample=SAMPLE,rep=REP)
   output:
-    mat="{group}/07_deeptools/computeMatrix/{group}_{type}.mat.gz",
-    tab="{group}/07_deeptools/computeMatrix/{group}_{type}.tab",
-    bed="{group}/07_deeptools/computeMatrix/{group}_{type}.bed"
+    mat="{group}/07_deeptools/computeMatrix/{group}_{type}_lncRNA.mat.gz",
+    tab="{group}/07_deeptools/computeMatrix/{group}_{type}_lncRNA.tab",
+    bed="{group}/07_deeptools/computeMatrix/{group}_{type}_lncRNA.bed"
   log:
-    "{group}/logs/computeMatrix_distribution/{group}_{type}.log"
+    "{group}/logs/computeMatrix_distribution/{group}_{type}_lncRNA.log"
   params:
     type=r'{type}',
     region=REFSEQ,
@@ -104,11 +54,11 @@ rule computeMatrix_distribution_TSS_TES:
 
 rule plotProfile_TSS_TES:
   input:
-    mat="{group}/07_deeptools/computeMatrix/{group}_{type}.mat.gz"
+    mat="{group}/07_deeptools/computeMatrix/{group}_{type}_lncRNA.mat.gz"
   output:
-    png="{group}/07_deeptools/plotProfile/{group}_{type}.png"
+    png="{group}/07_deeptools/plotProfile/{group}_{type}_lncRNA.png"
   log:
-    "{group}/logs/plotProfile/{group}_{type}.log"
+    "{group}/logs/plotProfile/{group}_{type}_lncRNA.log"
   params:
     genes="genes"
   threads: 1
@@ -144,11 +94,11 @@ rule computeMatrix_distribution:
   input:
     bw=expand("{group}/05_bedtools/bigWig/KAS-seq_{group}_{sample}_{treatment}_{rep}_ext.bw",group=r'{group}',sample=SAMPLE,treatment=TREATMENT,rep=REP)
   output:
-    mat="{group}/07_deeptools/computeMatrix/{group}.mat.gz",
-    tab="{group}/07_deeptools/computeMatrix/{group}.tab",
-    bed="{group}/07_deeptools/computeMatrix/{group}.bed"
+    mat="{group}/07_deeptools/computeMatrix/{group}_lncRNA.mat.gz",
+    tab="{group}/07_deeptools/computeMatrix/{group}_lncRNA.tab",
+    bed="{group}/07_deeptools/computeMatrix/{group}_lncRNA.bed"
   log:
-    "{group}/logs/computeMatrix_distribution/{group}.log"
+    "{group}/logs/computeMatrix_distribution/{group}_lncRNA.log"
   params:
     region=REFSEQ,
     blacklist=BLACKLIST,
@@ -173,11 +123,11 @@ rule computeMatrix_distribution:
 
 rule plotProfile:
   input:
-    mat="{group}/07_deeptools/computeMatrix/{group}.mat.gz"
+    mat="{group}/07_deeptools/computeMatrix/{group}_lncRNA.mat.gz"
   output:
-    png="{group}/07_deeptools/plotProfile/{group}.png"
+    png="{group}/07_deeptools/plotProfile/{group}_lncRNA.png"
   log:
-    "{group}/logs/plotProfile/{group}.log"
+    "{group}/logs/plotProfile/{group}_lncRNA.log"
   params:
     genes="genes"
   threads: 1
@@ -190,11 +140,11 @@ rule plotProfile:
        
 rule plotHeatmap:
   input:
-    mat="{group}/07_deeptools/computeMatrix/{group}.mat.gz"
+    mat="{group}/07_deeptools/computeMatrix/{group}_lncRNA.mat.gz"
   output:
-    png="{group}/07_deeptools/plotHeatmap/{group}.png"
+    png="{group}/07_deeptools/plotHeatmap/{group}_lncRNA.png"
   log:
-    "{group}/logs/plotHeatmap/{group}.log"
+    "{group}/logs/plotHeatmap/{group}_lncRNA.log"
   params:
     genes="genes"
   threads: 1
@@ -209,12 +159,12 @@ rule multiBigwigSummary:
   input:
     expand("{group}/05_bedtools/bigWig/KAS-seq_{group}_{sample}_{treatment}_{rep}_ext.bw",group=r"{group}",sample=SAMPLE,treatment=TREATMENT,rep=REP)
   output:
-    npz="{group}/07_deeptools/multiBigwigSummary/{group}.npz",
-    tab="{group}/07_deeptools/multiBigwigSummary/{group}.tab"
+    npz="{group}/07_deeptools/multiBigwigSummary/{group}_lncRNA.npz",
+    tab="{group}/07_deeptools/multiBigwigSummary/{group}_lncRNA.tab"
   params:
     blacklist=BLACKLIST
   log:
-    "{group}/logs/multiBigwigSummary/{group}.log"
+    "{group}/logs/multiBigwigSummary/{group}_lncRNA.log"
   threads: 15
   shell:
     "/disk1/home/user_09/anaconda3/envs/deeptools/bin/multiBigwigSummary bins \
@@ -228,11 +178,11 @@ rule multiBigwigSummary:
 
 rule plotPCA:
   input:
-    "{group}/07_deeptools/multiBigwigSummary/{group}.npz"
+    "{group}/07_deeptools/multiBigwigSummary/{group}_lncRNA.npz"
   output:
-    "{group}/07_deeptools/plotPCA/{group}.png"
+    "{group}/07_deeptools/plotPCA/{group}_lncRNA.png"
   log:
-    "{group}/logs/plotPCA/{group}.log"
+    "{group}/logs/plotPCA/{group}_lncRNA.log"
   params:
     genes="genes"
   threads: 1

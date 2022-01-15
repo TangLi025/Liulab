@@ -5,7 +5,7 @@
 # Stop on error
 set -e
 
-THREAD=25
+THREAD=50
 
 DIRS=( \
       "/disk1/home/user_09/KAS-METTL/" \
