@@ -1,39 +1,35 @@
+GROUP=["METTL3_1","METTL3_2","METTL3_3","METTL14","YTHDC1"]
 TREATMENT=["input","IP"]
 REP=["rep1","rep2"]
-DUP=["raw","rmdup"]
-SAMPLE=["DMSO"]
-#SAMPLE=["DMSO","DRB","TRIP"]
-MERGE=["","_merge"]
+SAMPLE=["CTRL","KO"]
 
-GENOME_2bit="/disk1/home/user_09/reference/genome/GRCh37.p13.genome.2bit"
-GENOME="/disk1/home/user_09/reference/genome/GRCh37.p13.genome.fa"
-GENOME_INDEX="/disk1/home/user_09/reference/genome/GRCh37.p13.genome.fa.fai"
-GTF="/disk1/home/user_09/reference/annotation/hg19/gencode.v19.annotation.gtf"
-GTF_protein_coding="/disk1/home/user_09/reference/annotation/hg19/gencode.v19.annotation.protein_coding.chr.gtf"
-BED_GB="/disk1/home/user_09/reference/annotation/hg19/gencode.v19.annotation.protein_coding.chr.gene.GB.bed"
-BED_TSS="/disk1/home/user_09/reference/annotation/hg19/gencode.v19.annotation.protein_coding.chr.gene.TSS.bed"
-BLACKLIST="/disk1/home/user_09/reference/annotation/hg19/hg19_blacklist.bed"
+GENOME_2bit="/disk1/home/user_09/reference/genome/GRCm39.genome.2bit"
+GENOME="/disk1/home/user_09/reference/genome/GRCm39.genome.fa"
+GENOME_INDEX="/disk1/home/user_09/reference/genome/GRCm39.genome.fa.fai"
+GTF="/disk1/home/user_09/reference/annotation/mm19/gencode.vM28.annotation.gtf"
+GTF_protein_coding="/disk1/home/user_09/reference/annotation/mm19/gencode.vM28.annotation.protein_coding.chr.gtf"
+BED_GB="/disk1/home/user_09/reference/annotation/mm19/mm19_Refseq.GB.bed"
+BED_TSS="/disk1/home/user_09/reference/annotation/mm19/mm19_Refseq.TSS.bed"
+BLACKLIST="/disk1/home/user_09/reference/annotation/mm19/mm19.blacklist.bed"
 
 rule all:
   input:
-    #"07_deeptools/computeMatrix/DMSO_IP_merge.tab",
-    "07_deeptools/computeMatrix/DMSO_IP_merge_TSS.tab",
-    "07_deeptools/computeMatrix/DMSO_IP_merge_body_1000.tab",
-    "07_deeptools/computeMatrix/DMSO_IP_merge_body_10000.tab"
+    expand("{group}/07_deeptools/computeMatrix/{sample}_{treatment}_{rep}_TSS.tab",group=GROUP,sample=SAMPLE,treatment=TREATMENT,rep=REP),
+    expand("{group}/07_deeptools/computeMatrix/{sample}_{treatment}_{rep}_body.tab",group=GROUP,sample=SAMPLE,treatment=TREATMENT,rep=REP)
 
 rule computeMatrix_distribution_TSS:
   input:
-    bw="07_deeptools/bamCoverage/DMSO_IP_merge.bw"
+    bw="{group}/05_bedtools/bigWig/KAS-seq_{group}_{sample}_{treatment}_{rep}_ext.bw"
   output:
-    mat="07_deeptools/computeMatrix/DMSO_IP_merge_TSS.mat.gz",
-    tab="07_deeptools/computeMatrix/DMSO_IP_merge_TSS.tab",
-    bed="07_deeptools/computeMatrix/DMSO_IP_merge_TSS.bed"
+    mat="{group}/07_deeptools/computeMatrix/{sample}_{treatment}_{rep}_TSS.mat.gz",
+    tab="{group}/07_deeptools/computeMatrix/{sample}_{treatment}_{rep}_TSS.tab",
+    bed="{group}/07_deeptools/computeMatrix/{sample}_{treatment}_{rep}_TSS.bed"
   log:
-    "logs/computeMatrix_distribution/DMSO_IP_merge_TSS.log"
+    "{group}/logs/computeMatrix_distribution/{sample}_{treatment}_{rep}_TSS.log"
   params:
     gtf=BED_TSS,
     blacklist=BLACKLIST,
-  threads: 45
+  threads: 10
   shell:
    "/disk1/home/user_09/anaconda3/envs/deeptools/bin/computeMatrix scale-regions \
       --regionsFileName {params.gtf} \
@@ -49,19 +45,19 @@ rule computeMatrix_distribution_TSS:
       --missingDataAsZero \
        > {log} 2>&1"
        
-rule computeMatrix_distribution_gene_body_1000:
+rule computeMatrix_distribution_gene_body:
   input:
-    bw="07_deeptools/bamCoverage/DMSO_IP_merge.bw"
+    bw="{group}/05_bedtools/bigWig/KAS-seq_{group}_{sample}_{treatment}_{rep}_ext.bw"
   output:
-    mat="07_deeptools/computeMatrix/DMSO_IP_merge_body_1000.mat.gz",
-    tab="07_deeptools/computeMatrix/DMSO_IP_merge_body_1000.tab",
-    bed="07_deeptools/computeMatrix/DMSO_IP_merge_body_1000.bed"
+    mat="{group}/07_deeptools/computeMatrix/{sample}_{treatment}_{rep}_body.mat.gz",
+    tab="{group}/07_deeptools/computeMatrix/{sample}_{treatment}_{rep}_body.tab",
+    bed="{group}/07_deeptools/computeMatrix/{sample}_{treatment}_{rep}_body.bed"
   log:
-    "logs/computeMatrix_distribution/DMSO_IP_merge_body_1000.log"
+    "{group}/logs/computeMatrix_distribution/{sample}_{treatment}_{rep}_body.log"
   params:
     gtf=BED_GB,
     blacklist=BLACKLIST,
-  threads: 45
+  threads: 10
   shell:
     "/disk1/home/user_09/anaconda3/envs/deeptools/bin/computeMatrix scale-regions \
       --regionsFileName {params.gtf} \
@@ -70,34 +66,6 @@ rule computeMatrix_distribution_gene_body_1000:
       --outFileNameMatrix {output.tab} \
       --outFileSortedRegions {output.bed} \
       --regionBodyLength 1000 \
-      --beforeRegionStartLength 0  \
-      --afterRegionStartLength 0 \
-      --binSize 50 \
-      --numberOfProcessors {threads} \
-      --missingDataAsZero \
-       > {log} 2>&1"
-       
-rule computeMatrix_distribution_gene_body_10000:
-  input:
-    bw="07_deeptools/bamCoverage/DMSO_IP_merge.bw"
-  output:
-    mat="07_deeptools/computeMatrix/DMSO_IP_merge_body_10000.mat.gz",
-    tab="07_deeptools/computeMatrix/DMSO_IP_merge_body_10000.tab",
-    bed="07_deeptools/computeMatrix/DMSO_IP_merge_body_10000.bed"
-  log:
-    "logs/computeMatrix_distribution/DMSO_IP_merge_body_10000.log"
-  params:
-    gtf=BED_GB,
-    blacklist=BLACKLIST,
-  threads: 45
-  shell:
-    "/disk1/home/user_09/anaconda3/envs/deeptools/bin/computeMatrix scale-regions \
-      --regionsFileName {params.gtf} \
-      --scoreFileName {input.bw} \
-      --outFileName {output.mat} \
-      --outFileNameMatrix {output.tab} \
-      --outFileSortedRegions {output.bed} \
-      --regionBodyLength 10000 \
       --beforeRegionStartLength 0  \
       --afterRegionStartLength 0 \
       --binSize 50 \

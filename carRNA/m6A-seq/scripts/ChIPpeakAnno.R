@@ -1,8 +1,8 @@
 rm(list=ls())
 library(ChIPpeakAnno)
 
-CTRL_bed1 <- paste0("~/carRNA_science/m6A-seq_narrowPeak/GSM3912800_Mettl3_Control_r1_peaks.narrowPeak")
-CTRL_bed2 <- paste0("~/carRNA_science/m6A-seq_narrowPeak/GSM3912801_Mettl3_Control_r2_peaks.narrowPeak")
+CTRL_bed1 <- paste0("~/carRNA_science/m6A-seq_narrowPeak/GSM3912804_Mettl3_KO2_r1_peaks.narrowPeak")
+CTRL_bed2 <- paste0("~/carRNA_science/m6A-seq_narrowPeak/GSM3912805_Mettl3_KO2_r2_peaks.narrowPeak")
 
 CTRL_1 <- ChIPpeakAnno::toGRanges(CTRL_bed1, format="BED", header=FALSE)
 CTRL_2 <- ChIPpeakAnno::toGRanges(CTRL_bed2, format="BED", header=FALSE)
@@ -24,7 +24,7 @@ makeVennDiagram(ol_CTRL, fill=c("#a1d8b1", "#edfcc2"), # circle fill color
 CTRL <- ol_CTRL$peaklist[["CTRL_1///CTRL_2"]]
 CTRL_export <- as.data.frame(CTRL)
 
-write.table(CTRL_export[,c(1,2,3,6,5,5)],"~/carRNA_science/m6A-seq_narrowPeak/Mettl3_Control_commen_peaks.narrowPeak",quote = FALSE,row.names = FALSE,col.names = FALSE,sep="\t")
+write.table(CTRL_export[,c(1,2,3)],"~/carRNA_science/m6A-seq_narrowPeak/Mettl3_KO2_commen_peaks.narrowPeak",quote = FALSE,row.names = FALSE,col.names = FALSE,sep="\t")
 
 
 KO <- ol_KO$peaklist[["KO_1///KO_2"]]

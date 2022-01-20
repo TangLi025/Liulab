@@ -14,15 +14,15 @@ GTF="/disk1/home/user_09/reference/annotation/mm10/gencode.vM19.annotation.gtf"
 
 rule all:
   input:
-    "~/carRNA_science/m6A-seq_narrowPeak/Mettl3_Control_commen_peaks_annotation_homer.xls"
+    "/disk1/home/user_09/carRNA_science/m6A-seq_narrowPeak/Mettl3_Control_commen_peaks_annotation_homer.xls"
 
 rule peak_annotation_homer_raw:
   input:
-    "~/carRNA_science/m6A-seq_narrowPeak/Mettl3_Control_commen_peaks.narrowPeak"
+    "/disk1/home/user_09/carRNA_science/m6A-seq_narrowPeak/Mettl3_Control_commen_peaks.narrowPeak"
   output:
-    "~/carRNA_science/m6A-seq_narrowPeak/Mettl3_Control_commen_peaks_annotation_homer.xls"
+    "/disk1/home/user_09/carRNA_science/m6A-seq_narrowPeak/Mettl3_Control_commen_peaks_annotation_homer.xls"
   log:
-    "~/carRNA_science/logs/peak_annotation_homer/Mettl3_Control_commen_peaks_annotation_homer.log"
+    "/disk1/home/user_09/carRNA_science/logs/peak_annotation_homer/Mettl3_Control_commen_peaks_annotation_homer.log"
   threads:2
   params:
     genome=GENOME,

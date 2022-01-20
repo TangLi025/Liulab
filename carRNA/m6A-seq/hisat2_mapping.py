@@ -1,12 +1,12 @@
-SAMPLE=["Lysate","Result"]
-DUP=["raw","rmdup"]
-TREATMENT=["input","IP"]
+SAMPLE=["CTRL"]
+DUP=["raw"]
+TREATMENT=["input"]
 REP=["rep1","rep2"]
 READ=["1","2"]
 STRAND=["neg","pos"]
 
 
-INDEX="/disk1/home/user_09/reference/index/hisat2/mm10/mm10"
+INDEX="/disk1/home/user_09/reference/index/hisat2/mm19_hisat2_ss_exon/mm19"
 
 rule all:
   input:
@@ -14,8 +14,8 @@ rule all:
      
 rule hisat2_mapping:
   input:
-    "02_fastp/{sample}_{treatment}_{rep}_1.fastq",
-    "02_fastp/{sample}_{treatment}_{rep}_2.fastq"
+    "00_raw_fastq/{sample}_{treatment}_{rep}_1.fq.gz",
+    "00_raw_fastq/{sample}_{treatment}_{rep}_2.fq.gz"
   output:
     bam="04_bam_raw/{sample}_{treatment}_{rep}.bam",
     summary="04_bam_raw/{sample}_{treatment}_{rep}.summary.txt"
@@ -23,7 +23,7 @@ rule hisat2_mapping:
     index=INDEX
   log:
     "logs/hisat2_mapping/{sample}_{treatment}_{rep}.log"
-  threads: 10
+  threads: 20
   shell:
     """
     /disk1/home/user_09/anaconda3/envs/LinLong/bin/hisat2 -x {params.index} --rna-strandness RF \
@@ -32,17 +32,6 @@ rule hisat2_mapping:
     | /disk1/home/user_09/anaconda3/envs/LinLong/bin/samtools view -@ {threads} -q 20 -bS \
     | /disk1/home/user_09/anaconda3/envs/LinLong/bin/samtools sort -@ {threads} -o {output.bam} 
     """
-    
-rule samtools_rmdup:
-  input:
-    "04_bam_raw/{sample}_{treatment}_{rep}.bam"
-  output:
-    "04_bam_rmdup/{sample}_{treatment}_{rep}.bam"
-  log:
-    "logs/samtools_rmdup/{sample}_{treatment}_{rep}.log"
-  threads: 1
-  shell:
-    "/disk1/home/user_09/anaconda3/envs/LinLong/bin/samtools rmdup -s {input} {output} > {log} 2>&1"
     
 rule bam_index:
   input:

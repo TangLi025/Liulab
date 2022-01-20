@@ -1,4 +1,4 @@
-GROUP=["METTL3_2"]
+GROUP=["METTL3_2","METTL3_3"]
 SAMPLE=["CTRL","KO"]
 
 TREATMENT=["IP"]
@@ -7,22 +7,22 @@ REP=["rep1","rep2"]
 
 BLACKLIST="/disk1/home/user_09/reference/annotation/mm19/mm19.blacklist.bed"
 
-HIGH="/disk1/home/user_09/KAS-METTL/METTL3_2/08_FPKM/fpkms_high.gtf"
-MEDIUM="/disk1/home/user_09/KAS-METTL/METTL3_2/08_FPKM/fpkms_medium.gtf"
-LOW="/disk1/home/user_09/KAS-METTL/METTL3_2/08_FPKM/fpkms_low.gtf"
-SILENT="/disk1/home/user_09/KAS-METTL/METTL3_2/08_FPKM/fpkms_silent.gtf"
+HIGH="/disk1/home/user_09/KAS/fpkms_high.gtf"
+MEDIUM="/disk1/home/user_09/KAS/fpkms_medium.gtf"
+LOW="/disk1/home/user_09/KAS/fpkms_low.gtf"
+SILENT="/disk1/home/user_09/KAS/fpkms_silent.gtf"
 
 rule all:
   input:
-    "07_deeptools/plotProfile_FPKM/METTL3_2.png"
+    expand("{group}/07_deeptools/plotProfile_FPKM/{group}_liu.png",group=GROUP)
 
 rule computeMatrix_distribution_FPKM:
   input:
-    bw="05_bedtools/bigWig/KAS-seq_{group}_CTRL_IP_rep1_ext.bw"
+    bw="{group}/05_bedtools/bigWig/KAS-seq_{group}_CTRL_IP_rep1_ext.bw"
   output:
-    mat="07_deeptools/computeMatrix_FPKM/{group}.mat.gz",
+    mat="{group}/07_deeptools/computeMatrix_FPKM/{group}_liu.mat.gz",
   log:
-    "logs/computeMatrix_distribution_FPKM/{group}.log"
+    "{group}/logs/computeMatrix_distribution_FPKM/{group}_liu.log"
   params:
     gtf=[HIGH,MEDIUM,LOW,SILENT],
     blacklist=BLACKLIST
@@ -45,11 +45,11 @@ rule computeMatrix_distribution_FPKM:
 
 rule plotProfile_FPKM:
   input:
-    mat="07_deeptools/computeMatrix_FPKM/{group}.mat.gz"
+    mat="{group}/07_deeptools/computeMatrix_FPKM/{group}_liu.mat.gz"
   output:
-    png="07_deeptools/plotProfile_FPKM/{group}.png"
+    png="{group}/07_deeptools/plotProfile_FPKM/{group}_liu.png"
   log:
-    "logs/plotProfile_FPKM/{group}.log"
+    "{group}/logs/plotProfile_FPKM/{group}_liu.log"
   params:
     labels=["high","medium","low","silent"]
   threads: 1

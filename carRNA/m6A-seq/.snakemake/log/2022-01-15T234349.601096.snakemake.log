@@ -1,0 +1,42 @@
+Building DAG of jobs...
+File path /disk1/home/user_09//carRNA_science/m6A-seq_narrowPeak/Mettl3_Control_commen_peaks_annotation_homer.xls contains double '/'. This is likely unintended. It can also lead to inconsistent results of the file-matching approach used by Snakemake.
+File path /disk1/home/user_09//carRNA_science/m6A-seq_narrowPeak/Mettl3_Control_commen_peaks.narrowPeak contains double '/'. This is likely unintended. It can also lead to inconsistent results of the file-matching approach used by Snakemake.
+File path /disk1/home/user_09//carRNA_science/m6A-seq_narrowPeak/Mettl3_Control_commen_peaks_annotation_homer.xls contains double '/'. This is likely unintended. It can also lead to inconsistent results of the file-matching approach used by Snakemake.
+File path /disk1/home/user_09//carRNA_science/logs/peak_annotation_homer/Mettl3_Control_commen_peaks_annotation_homer.log contains double '/'. This is likely unintended. It can also lead to inconsistent results of the file-matching approach used by Snakemake.
+File path /disk1/home/user_09//carRNA_science/logs/peak_annotation_homer/Mettl3_Control_commen_peaks_annotation_homer.log contains double '/'. This is likely unintended. It can also lead to inconsistent results of the file-matching approach used by Snakemake.
+Using shell: /usr/bin/bash
+Provided cores: 50
+Rules claiming more threads will be scaled down.
+Job stats:
+job                          count    min threads    max threads
+-------------------------  -------  -------------  -------------
+all                              1              1              1
+peak_annotation_homer_raw        1              2              2
+total                            2              1              2
+
+Select jobs to execute...
+
+[Sat Jan 15 23:43:49 2022]
+rule peak_annotation_homer_raw:
+    input: /disk1/home/user_09//carRNA_science/m6A-seq_narrowPeak/Mettl3_Control_commen_peaks.narrowPeak
+    output: /disk1/home/user_09//carRNA_science/m6A-seq_narrowPeak/Mettl3_Control_commen_peaks_annotation_homer.xls
+    log: /disk1/home/user_09//carRNA_science/logs/peak_annotation_homer/Mettl3_Control_commen_peaks_annotation_homer.log
+    jobid: 1
+    threads: 2
+    resources: tmpdir=/tmp
+
+[Sat Jan 15 23:47:18 2022]
+Finished job 1.
+1 of 2 steps (50%) done
+Select jobs to execute...
+
+[Sat Jan 15 23:47:18 2022]
+localrule all:
+    input: /disk1/home/user_09//carRNA_science/m6A-seq_narrowPeak/Mettl3_Control_commen_peaks_annotation_homer.xls
+    jobid: 0
+    resources: tmpdir=/tmp
+
+[Sat Jan 15 23:47:18 2022]
+Finished job 0.
+2 of 2 steps (100%) done
+Complete log: /disk1/home/user_09/Liulab/carRNA/m6A-seq/.snakemake/log/2022-01-15T234349.601096.snakemake.log

@@ -1,4 +1,4 @@
-GROUP=["METTL3_2"]
+GROUP=["METTL3_2","METTL3_1","METTL3_3","METTL14","YTHDC1"]
 SAMPLE=["CTRL","KO"]
 
 TREATMENT=["input","IP"]
@@ -13,13 +13,14 @@ BLACKLIST="/disk1/home/user_09/reference/annotation/mm19/mm19.blacklist.bed"
 
 rule all:
   input:
-    expand("{group}/05_bedtools/bigWig/KAS-seq_{group}_{sample}_{treatment}_{rep}_ext.bw",group=GROUP,sample=SAMPLE,treatment=TREATMENT,rep=REP),
-    expand("{group}/07_deeptools/computeMatrix/{group}.mat.gz",group=GROUP),
-    expand("{group}/07_deeptools/plotProfile/{group}.png",group=GROUP),
-    expand("{group}/07_deeptools/plotHeatmap/{group}.png",group=GROUP),
-    expand("{group}/07_deeptools/plotPCA/{group}.png",group=GROUP),
-    expand("{group}/07_deeptools/plotProfile/{group}_{type}.png",group=GROUP,type=["TSS","TES"]),
-    expand("{group}/07_deeptools/plotProfile/peak_{group}.png",group=GROUP)
+    #expand("{group}/05_bedtools/bigWig/KAS-seq_{group}_{sample}_{treatment}_{rep}_ext.bw",group=GROUP,sample=SAMPLE,treatment=TREATMENT,rep=REP),
+    expand("{group}/05_bedtools/bigWig/KAS-seq_{group}_{sample}_{treatment}_{rep}_ext_raw.bw",group=GROUP,sample=SAMPLE,treatment=["IP"],rep=REP),
+    #expand("{group}/07_deeptools/computeMatrix/{group}.mat.gz",group=GROUP),
+    #expand("{group}/07_deeptools/plotProfile/{group}.png",group=GROUP),
+    #expand("{group}/07_deeptools/plotHeatmap/{group}.png",group=GROUP),
+    #expand("{group}/07_deeptools/plotPCA/{group}.png",group=GROUP),
+    #expand("{group}/07_deeptools/plotProfile/{group}_{type}.png",group=GROUP,type=["TSS","TES"]),
+    #expand("{group}/07_deeptools/plotProfile/peak_{group}.png",group=GROUP)
 
 rule computeMatrix_distribution_peak:
   input:
@@ -135,6 +136,19 @@ rule bedGraphToBigWig:
     "{group}/05_bedtools/bigWig/KAS-seq_{group}_{sample}_{treatment}_{rep}_ext.bw"
   log:
     "{group}/logs/bedGraphToBigWig/KAS-seq_{group}_{sample}_{treatment}_{rep}.log"
+  threads: 1
+  shell:
+    "/disk1/home/user_09/anaconda3/envs/bedtools/bin/bedGraphToBigWig {input[0]}\
+      {input[1]} {output} > {log} 2>&1"
+
+rule bedGraphToBigWig_raw:
+  input:
+    "{group}/05_bedtools/bedGraph/KAS-seq_{group}_{sample}_{treatment}_{rep}_ext.bg",
+    GENOME_INDEX
+  output:
+    "{group}/05_bedtools/bigWig/KAS-seq_{group}_{sample}_{treatment}_{rep}_ext_raw.bw"
+  log:
+    "{group}/logs/bedGraphToBigWig/KAS-seq_{group}_{sample}_{treatment}_{rep}_raw.log"
   threads: 1
   shell:
     "/disk1/home/user_09/anaconda3/envs/bedtools/bin/bedGraphToBigWig {input[0]}\

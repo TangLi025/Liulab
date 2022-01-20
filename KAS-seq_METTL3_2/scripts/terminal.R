@@ -1,12 +1,17 @@
 library(rtracklayer)
 
-gene <- read.delim("~/reference/annotation/hg19/gencode.v19.annotation.protein_coding.chr.gene.bed",header = F)
+gtf <- import("~/reference/annotation/hg19/gencode.v19.annotation.gene.gtf")
+
+gene <- cbind(gene,gtf$gene_type)
+gene <- read.delim("~/reference/annotation/hg19/gencode.v19.annotation.gene.bed",header = F)
 gene_1 <- rbind(gene[1,],gene)
 gene_0 <- rbind(gene,gene[1,])
 
 gene[gene[,6]=="+",][gene[gene[,6]=="+",3]+10000 < gene[which(gene[,6]=="+")+1,2] | gene[which(gene[,6]=="+"),1]!=gene[which(gene[,6]=="+")+1,1],]
 gene[gene[,6]=="-",][gene[gene[,6]=="-",2]-10000 > gene[which(gene[,6]=="-")-1,3] | gene[which(gene[,6]=="-"),1]!=gene[which(gene[,6]=="-")-1,1],]
-gene_terminal <- rbind(gene[gene[,6]=="+",][gene[gene[,6]=="+",3]+10000 < gene[which(gene[,6]=="+")+1,2] | gene[which(gene[,6]=="+"),1]!=gene[which(gene[,6]=="+")+1,1],],gene[gene[,6]=="-",][gene[gene[,6]=="-",2]-10000 > gene[which(gene[,6]=="-")-1,3] | gene[which(gene[,6]=="-"),1]!=gene[which(gene[,6]=="-")-1,1],],gene[20332,])
+gene_terminal <- rbind(gene[gene[,6]=="+",][gene[gene[,6]=="+",3]+10000 < gene[which(gene[,6]=="+")+1,2] | gene[which(gene[,6]=="+"),1]!=gene[which(gene[,6]=="+")+1,1],],gene[gene[,6]=="-",][gene[gene[,6]=="-",2]-10000 > gene[which(gene[,6]=="-")-1,3] | gene[which(gene[,6]=="-"),1]!=gene[which(gene[,6]=="-")-1,1],])
+
+gene_terminal_protein_coding <- gene_terminal[gene_terminal[,11]=="protein_coding",]
 
 
 TERMINAL_bed <- gene_terminal
