@@ -1,32 +1,33 @@
-GROUP=["mESC_KAS-seq"]
-SAMPLE=["mESC"]
-
+SAMPLE=["Lysate","Result"]
 TREATMENT=["input","IP"]
 REP=["rep1","rep2"]
 
+DUP=["raw","rmdup"]
+STRAND=["pos","neg"]
+
 rule all:
   input:
-    expand("{group}/07_deeptools/plotFingerprint/KAS-seq_plotFingerprint_rmdup.png",group=GROUP)
+    expand("07_deeptools/plotFingerprint/plotFingerprint_{dup}.png",dup=DUP)
 
 
 rule plotFingerprint:
   input:
-    expand("{group}/04_bam_unique/{sample}_{treatment}_{rep}.bam",group=r'{group}',sample=SAMPLE,treatment=TREATMENT,rep=REP)
+    expand("04_bam_{dup}/{sample}_{treatment}_{rep}.bam",group=r'{group}',dup=r'{dup}',sample=SAMPLE,treatment=TREATMENT,rep=REP)
   output:
-    png="{group}/07_deeptools/plotFingerprint/KAS-seq_plotFingerprint_rmdup.png",
-    tab="{group}/07_deeptools/plotFingerprint/KAS-seq_plotFingerprint_rmdup.tab"
+    png="07_deeptools/plotFingerprint/plotFingerprint_{dup}.png",
+    tab="07_deeptools/plotFingerprint/plotFingerprint_{dup}.tab"
   log:
-    "{group}/logs/plotFingerprint/KAS-seq_plotFingerprint_rmdup.log"
+    "logs/plotFingerprint/plotFingerprint_{dup}.log"
   params:
-    labels=expand("{samples}_{treatment}_{rep}",samples=SAMPLE,treatment=["input","KAS-seq"],rep=REP),
-    title=r"""Fingerprints of KAS-seq data""",
-  threads: 20
+    labels=expand("{samples}_{treatment}_{rep}",samples=SAMPLE,treatment=["input","m6A"],rep=REP),
+    title=r"""Fingerprints of MeRIP data""",
+  threads: 50
   shell:
     """
     /disk1/home/user_09/anaconda3/envs/deeptools/bin/plotFingerprint \
       -b {input} --labels {params.labels} --minMappingQuality 30 \
       --skipZeros --region 1 --numberOfSamples 500000 \
-      -T "Fingerprints of KAS-seq data" \
+      -T "Fingerprints of MeRIP data" \
       --plotFile {output.png} --plotFileFormat png \
       --outRawCounts {output.tab} \
       --numberOfProcessors {threads} \

@@ -2,12 +2,13 @@ library(rtracklayer)
 
 gtf <- import("~/reference/annotation/hg19/gencode.v19.annotation.gene.gtf")
 
-gene <- cbind(gene,gtf$gene_type)
+
 gene <- read.delim("~/reference/annotation/hg19/gencode.v19.annotation.gene.bed",header = F)
+gene <- cbind(gene,gtf$gene_type)
 gene_1 <- rbind(gene[1,],gene)
 gene_0 <- rbind(gene,gene[1,])
 
-gene[gene[,6]=="+",][gene[gene[,6]=="+",3]+10000 < gene[which(gene[,6]=="+")+1,2] | gene[which(gene[,6]=="+"),1]!=gene[which(gene[,6]=="+")+1,1],]
+gene[gene[,6]=="+",][which(gene[gene[,6]=="+",3]+10000 < gene[which(gene[,6]=="+")+1,2] | gene[which(gene[,6]=="+"),1]!=gene[which(gene[,6]=="+")+1,1]),]
 gene[gene[,6]=="-",][gene[gene[,6]=="-",2]-10000 > gene[which(gene[,6]=="-")-1,3] | gene[which(gene[,6]=="-"),1]!=gene[which(gene[,6]=="-")-1,1],]
 gene_terminal <- rbind(gene[gene[,6]=="+",][gene[gene[,6]=="+",3]+10000 < gene[which(gene[,6]=="+")+1,2] | gene[which(gene[,6]=="+"),1]!=gene[which(gene[,6]=="+")+1,1],],gene[gene[,6]=="-",][gene[gene[,6]=="-",2]-10000 > gene[which(gene[,6]=="-")-1,3] | gene[which(gene[,6]=="-"),1]!=gene[which(gene[,6]=="-")-1,1],])
 
@@ -27,12 +28,13 @@ TERMINAL_bed <- na.omit(TERMINAL_bed)
 
 write.table(TERMINAL_bed[,1:6],file="~/reference/annotation/hg19/gencode.v19.annotation.protein_coding.chr.gene.terminal.bed",sep="\t",quote = FALSE,row.names = FALSE,col.names = FALSE)
 
+terminal_gene_overlap <- read.table("~/reference/annotation/hg19/termination_peak_overlap.bed")
 terminal <- read.delim("~/KAS/TI_KAS-seq/07_deeptools/computeMatrix/DMSO_IP_merge_terminal.tab", header=T, skip=2)
-terminal <- terminal[,-501]
+terminal <- terminal[,-21]
 
 terminal_pos <- terminal >= 5
 
-terminal_rank <- data.frame(TERMINAL_bed[,4],rowSums(terminal_pos))
+terminal_rank <- data.frame(terminal_gene_overlap[,4],rowSums(terminal_pos))
 terminal_rank <- terminal_rank[order(terminal_rank[,2],decreasing=TRUE),]
 
 length <- dim(terminal_rank)[1]

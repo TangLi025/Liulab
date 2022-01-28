@@ -1,15 +1,11 @@
 rm(list=ls())
 library(ChIPpeakAnno)
 
-MODE <- "broad"
-GROUP <- "METTL3_2"
-TYPE <- "broadPeak"
+CTRL_bed1 <- "/disk1/home/user_09/LinLong/08_bed_filtered/raw/Lysate_rep1_peaks.bed"
+CTRL_bed2 <- "/disk1/home/user_09/LinLong/08_bed_filtered/raw/Lysate_rep2_peaks.bed"
 
-CTRL_bed1 <- paste0("~/KAS-METTL/",GROUP,"/06_macs2/",MODE,"/KAS-seq_",GROUP,"_CTRL_rep1_peaks.",TYPE)
-CTRL_bed2 <- paste0("~/KAS-METTL/",GROUP,"/06_macs2/",MODE,"/KAS-seq_",GROUP,"_CTRL_rep2_peaks.",TYPE)
-
-KO_bed1 <- paste0("~/KAS-METTL/",GROUP,"/06_macs2/",MODE,"/KAS-seq_",GROUP,"_KO_rep1_peaks.",TYPE)
-KO_bed2 <- paste0("~/KAS-METTL/",GROUP,"/06_macs2/",MODE,"/KAS-seq_",GROUP,"_KO_rep2_peaks.",TYPE)
+KO_bed1 <- "/disk1/home/user_09/LinLong/08_bed_filtered/raw/Result_rep1_peaks.bed"
+KO_bed2 <- "/disk1/home/user_09/LinLong/08_bed_filtered/raw/Result_rep2_peaks.bed"
 
 CTRL_1 <- ChIPpeakAnno::toGRanges(CTRL_bed1, format="BED", header=FALSE)
 CTRL_2 <- ChIPpeakAnno::toGRanges(CTRL_bed2, format="BED", header=FALSE)

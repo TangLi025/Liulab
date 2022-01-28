@@ -75,11 +75,11 @@ SummarizedExomePeaks <- normalizeGC(SummarizedExomePeaks)
 
 # Using the normalization factors calculated above, the GLM statistics of the IP/input design can be calculated with the function glmM():
   
-  SummarizedExomePeaks <- glmM(SummarizedExomePeaks) 
+SummarizedExomePeaks <- glmM(SummarizedExomePeaks) 
 
 # If the treated IP and input BAM are provided, glmDM() function can be used to conduct differential modification analysis on modification Peaks with interactive GLM:
   
-  SummarizedExomePeaks <- glmDM(SummarizedExomePeaks)
+SummarizedExomePeaks <- glmDM(SummarizedExomePeaks)
 
 # All of the GLM statistics and normalization factors calculated will be contained in the SummarizedExomePeaks object, which can be saved (ex. with saveRDS()) to store the intermediate results in a given pipeline of analysis.
 

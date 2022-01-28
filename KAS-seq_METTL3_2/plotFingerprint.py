@@ -1,5 +1,5 @@
-GROUP=["mESC_KAS-seq"]
-SAMPLE=["mESC"]
+GROUP=["mESC"]
+SAMPLE=["Ctrl","DRB"]
 
 TREATMENT=["input","IP"]
 REP=["rep1","rep2"]
@@ -11,7 +11,7 @@ rule all:
 
 rule plotFingerprint:
   input:
-    expand("{group}/04_bam_unique/{sample}_{treatment}_{rep}.bam",group=r'{group}',sample=SAMPLE,treatment=TREATMENT,rep=REP)
+    expand("{group}/04_bam_unique/{group}_{sample}_{treatment}_{rep}.bam",group=r'{group}',sample=SAMPLE,treatment=TREATMENT,rep=REP)
   output:
     png="{group}/07_deeptools/plotFingerprint/KAS-seq_plotFingerprint_rmdup.png",
     tab="{group}/07_deeptools/plotFingerprint/KAS-seq_plotFingerprint_rmdup.tab"

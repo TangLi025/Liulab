@@ -31,6 +31,7 @@ colnames(plotdata)=c("sample", "Genomic Regions","m6A peaks fraction")
 plotdata$`Genomic Regions`=gsub('_Ratio|Ratio','',plotdata$`Genomic Regions`)
 # plotdata$group=gsub('_.*','',plotdata$sample)
 ggplot(plotdata, aes(x=`Genomic Regions`, y=`m6A peaks fraction`,fill=sample))+
+  theme_bw() +
   geom_bar(stat = "identity",position = 'dodge',color='white')+
   labs(x="mESC cell line", y=expression('KAS-seq'~'peak'~'fraction'))+
   scale_fill_manual("",values = c('#969696','#BDBDBD', # #B3B3B3
@@ -42,6 +43,6 @@ ggplot(plotdata, aes(x=`Genomic Regions`, y=`m6A peaks fraction`,fill=sample))+
   theme(legend.position = c(0.14, 0.72),legend.direction = "vertical",
         legend.text = element_text( size = 10))+ 
   theme(axis.title.x = element_text(size = 14,margin = margin(t=15)))+
-  theme(axis.title.y = element_text(size = 14,margin = margin(r=11 )))+
-  theme_bw()
+  theme(axis.title.y = element_text(size = 14,margin = margin(r=11 )))
+  
 

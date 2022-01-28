@@ -21,7 +21,7 @@ rule bam_separate:
     temp("05_bam_{dup}_separated/{sample}_{treatment}_{rep}_147.bam"),
     "05_bam_{dup}_separated/{sample}_{treatment}_{rep}_pos.bam",
     "05_bam_{dup}_separated/{sample}_{treatment}_{rep}_neg.bam"
-  threads: 4
+  threads: 10
   shell:
     """
   	/disk1/home/user_09/anaconda3/envs/LinLong/bin/samtools view -@ {threads} -b -f 83 {input[0]} 1> {output[0]}
@@ -48,13 +48,10 @@ rule macs2_callpeak:
     "05_bam_{dup}_separated/{sample}_IP_{rep}_{strand}.bam",
     "05_bam_{dup}_separated/{sample}_input_{rep}_{strand}.bam"
   output:
-    "06_macs2/{dup}/{sample}_{rep}_{strand}_summits.bed",
     "06_macs2/{dup}/{sample}_{rep}_{strand}_peaks.xls",
-    "06_macs2/{dup}/{sample}_{rep}_{strand}_peaks.narrowPeak",
-    "06_macs2/{dup}/{sample}_{rep}_{strand}_control_lambda.bdg",
-    "06_macs2/{dup}/{sample}_{rep}_{strand}_treat_pileup.bdg"
+    "06_macs2/{dup}/{sample}_{rep}_{strand}_peaks.narrowPeak"
   log:
-    "logs/06_macs2/{dup}/{sample}_{rep}_{strand}.log"
+    "logs/macs2_callpeak/{dup}/{sample}_{rep}_{strand}.log"
   params:
     out_name="{sample}_{rep}_{strand}",
     out_dir="06_macs2/{dup}"
@@ -63,7 +60,8 @@ rule macs2_callpeak:
       -t {input[0]} -c {input[1]} \
       -n {params.out_name} \
       -f BAM --verbose 3 --nomodel --extsize 150 \
-      -g mm -q 0.01 \
+      --keep-dup 5 \
+      -g 1.3e8 -q 0.01 \
       --outdir {params.out_dir} > {log} 2>&1"
 
 rule bed_modify:
@@ -76,7 +74,7 @@ rule bed_modify:
     "06_macs2/{dup}/bed_modify/{sample}_{rep}_peaks.narrowPeak",
     "06_macs2/{dup}/bed_modify/{sample}_{rep}_peaks.bed"
   log:
-    "logs/06_macs2/{dup}/bed_modify/{sample}_{rep}.log"
+    "logs/bed_modify/{dup}/bed_modify/{sample}_{rep}.log"
   shell:
     """
     echo "primary peak number[neg]:" > {log} 2>&1
@@ -112,7 +110,7 @@ rule bed_filter:
     "07_featurecount_input_read_in_peak/{dup}/{sample}_{rep}.csv",
     "08_bed_filtered/{dup}/{sample}_{rep}_peaks.bed"
   log:
-    "logs/08_bed_filtered/{dup}/{sample}_{rep}.log"
+    "logs/bed_filtered/{dup}/{sample}_{rep}.log"
   script:
     "scripts/bed_filter.R"
     

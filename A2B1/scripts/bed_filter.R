@@ -5,12 +5,14 @@ sink(log, type = "message")
 
 library(rtracklayer)
 library(Rsubread)
+library(GenomeInfoDb)
 setwd("~/LinLong/")
 
 fracOverlapFeature <- 0.8
 fracOverlap <- 0.2
 
 bed <- snakemake@input[[1]]
+
 
 bed_df <- as.data.frame(rtracklayer::import(bed))
 saf <- data.frame(bed_df$name,bed_df[c(1,2,3,5)])

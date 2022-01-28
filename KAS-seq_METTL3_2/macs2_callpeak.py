@@ -1,26 +1,26 @@
-GROUP=["mESC_KAS-seq"]
-SAMPLE=["mESC"]
+GROUP=["mESC"]
+SAMPLE=["Ctrl","DRB"]
 
 TREATMENT=["input","IP"]
 REP=["rep1","rep2"]
 
 rule all:
   input:
-    expand("{group}/06_macs2/regular/{sample}_{rep}_peaks.narrowPeak",group=GROUP,sample=SAMPLE,rep=REP),
-    expand("{group}/06_macs2/broad/{sample}_{rep}_peaks.broadPeak",group=GROUP,sample=SAMPLE,rep=REP),
-    expand("{group}/06_macs2/broad/{sample}_{rep}_nomodel_peaks.broadPeak",group=GROUP,sample=SAMPLE,rep=REP),
+    expand("{group}/06_macs2/regular/{group}_{sample}_{rep}_peaks.narrowPeak",group=GROUP,sample=SAMPLE,rep=REP),
+    expand("{group}/06_macs2/broad/{group}_{sample}_{rep}_peaks.broadPeak",group=GROUP,sample=SAMPLE,rep=REP),
+    expand("{group}/06_macs2/broad/{group}_{sample}_{rep}_nomodel_peaks.broadPeak",group=GROUP,sample=SAMPLE,rep=REP),
 
 rule macs2_callpeak_regular:
   input:
-    "{group}/05_bedtools/bed_extend/{sample}_IP_{rep}_ext.bed",
-    "{group}/05_bedtools/bed_extend/{sample}_input_{rep}_ext.bed"
+    "{group}/05_bedtools/bed_extend/{group}_{sample}_IP_{rep}_ext.bed",
+    "{group}/05_bedtools/bed_extend/{group}_{sample}_input_{rep}_ext.bed"
   output:
-    "{group}/06_macs2/regular/{sample}_{rep}_peaks.narrowPeak",
-    "{group}/06_macs2/regular/{sample}_{rep}_peaks.xls"
+    "{group}/06_macs2/regular/{group}_{sample}_{rep}_peaks.narrowPeak",
+    "{group}/06_macs2/regular/{group}_{sample}_{rep}_peaks.xls"
   log:
-    "{group}/logs/macs2_callpeak/regular/{sample}_{rep}.log"
+    "{group}/logs/macs2_callpeak/regular/{group}_{sample}_{rep}.log"
   params:
-    out_name="{sample}_{rep}",
+    out_name="{group}_{sample}_{rep}",
     out_dir="{group}/06_macs2/regular"
   shell:
     "/disk1/home/user_09/anaconda3/envs/m6A/bin/macs2 callpeak \
@@ -31,15 +31,15 @@ rule macs2_callpeak_regular:
       
 rule macs2_callpeak_broad:
   input:
-    "{group}/05_bedtools/bed_extend/{sample}_IP_{rep}_ext.bed",
-    "{group}/05_bedtools/bed_extend/{sample}_input_{rep}_ext.bed"
+    "{group}/05_bedtools/bed_extend/{group}_{sample}_IP_{rep}_ext.bed",
+    "{group}/05_bedtools/bed_extend/{group}_{sample}_input_{rep}_ext.bed"
   output:
-    "{group}/06_macs2/broad/{sample}_{rep}_peaks.broadPeak",
-    "{group}/06_macs2/broad/{sample}_{rep}_peaks.xls"
+    "{group}/06_macs2/broad/{group}_{sample}_{rep}_peaks.broadPeak",
+    "{group}/06_macs2/broad/{group}_{sample}_{rep}_peaks.xls"
   log:
-    "{group}/logs/macs2_callpeak/broad/{sample}_{rep}.log"
+    "{group}/logs/macs2_callpeak/broad/{group}_{sample}_{rep}.log"
   params:
-    out_name="{sample}_{rep}",
+    out_name="{group}_{sample}_{rep}",
     out_dir="{group}/06_macs2/broad"
   shell:
     "/disk1/home/user_09/anaconda3/envs/m6A/bin/macs2 callpeak \
@@ -51,15 +51,15 @@ rule macs2_callpeak_broad:
       
 rule macs2_callpeak_broad_nomodel:
   input:
-    "{group}/05_bedtools/bed_extend/{sample}_IP_{rep}_ext.bed",
-    "{group}/05_bedtools/bed_extend/{sample}_input_{rep}_ext.bed"
+    "{group}/05_bedtools/bed_extend/{group}_{sample}_IP_{rep}_ext.bed",
+    "{group}/05_bedtools/bed_extend/{group}_{sample}_input_{rep}_ext.bed"
   output:
-    "{group}/06_macs2/broad/{sample}_{rep}_nomodel_peaks.broadPeak",
-    "{group}/06_macs2/broad/{sample}_{rep}_nomodel_peaks.xls"
+    "{group}/06_macs2/broad/{group}_{sample}_{rep}_nomodel_peaks.broadPeak",
+    "{group}/06_macs2/broad/{group}_{sample}_{rep}_nomodel_peaks.xls"
   log:
-    "{group}/logs/macs2_callpeak/broad/{sample}_{rep}_nomodel.log"
+    "{group}/logs/macs2_callpeak/broad/{group}_{sample}_{rep}_nomodel.log"
   params:
-    out_name="{sample}_{rep}_nomodel",
+    out_name="{group}_{sample}_{rep}_nomodel",
     out_dir="{group}/06_macs2/broad"
   shell:
     "/disk1/home/user_09/anaconda3/envs/m6A/bin/macs2 callpeak \

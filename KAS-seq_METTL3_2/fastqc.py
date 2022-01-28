@@ -1,5 +1,5 @@
-GROUP=["mESC_KAS-seq"]
-SAMPLE=["mESC"]
+GROUP=["mESC"]
+SAMPLE=["Ctrl","DRB"]
 
 TREATMENT=["input","IP"]
 REP=["rep1","rep2"]
@@ -7,9 +7,9 @@ REP=["rep1","rep2"]
 
 rule all:
   input:
-    expand("{group}/02_trim_galore/{sample}_{treatment}_{rep}_trimmed.fq.gz",group=GROUP,sample=SAMPLE,treatment=TREATMENT,rep=REP)
+    expand("{group}/02_trim_galore/{group}_{sample}_{treatment}_{rep}_trimmed.fq.gz",group=GROUP,sample=SAMPLE,treatment=TREATMENT,rep=REP)
 
-
+'''
 rule fasterq_dump:
   input:
     "{group}/00_raw_sra/{sample}_{treatment}_{rep}.sra"
@@ -20,8 +20,8 @@ rule fasterq_dump:
   threads:10
   shell:
      "/disk1/home/user_09/anaconda3/envs/m6A/bin/fasterq-dump -e {threads} --split-3 -O {wildcards.group}/00_raw_fastq {input} > {log} 2>&1"
-
-'''  
+'''
+ 
 rule fastqc1:
   input:
     "{group}/00_raw_fastq/{group}_{sample}_{treatment}_{rep}.fastq.gz"
@@ -50,17 +50,16 @@ rule multiqc1:
   shell:
     "/disk1/home/user_09/anaconda3/envs/LinLong/bin/multiqc {input} \
       -o {params.out_dir} > {log} 2>&1"
-'''
 
 rule trim_galore:
   input:
-    "{group}/00_raw_fastq/{sample}_{treatment}_{rep}.fastq"
+    "{group}/00_raw_fastq/{group}_{sample}_{treatment}_{rep}.fastq.gz"
   output:
-    "{group}/02_trim_galore/{sample}_{treatment}_{rep}_trimmed.fq.gz"
+    "{group}/02_trim_galore/{group}_{sample}_{treatment}_{rep}_trimmed.fq.gz"
   params:
     output_dir="{group}/02_trim_galore"
   log:
-    "{group}/logs/trim_galore/{sample}_{treatment}_{rep}.log"
+    "{group}/logs/trim_galore/{group}_{sample}_{treatment}_{rep}.log"
   threads: 4
   shell:
     "/disk1/home/user_09/anaconda3/envs/trim-galore/bin/trim_galore \
@@ -69,7 +68,6 @@ rule trim_galore:
     --path_to_cutadapt /disk1/home/user_09/anaconda3/envs/trim-galore/bin/cutadapt \
     --output_dir {params.output_dir} {input} > {log} 2>&1"
 
-'''
 rule fastqc2:
   input:
     "{group}/02_trim_galore/{group}_{sample}_{treatment}_{rep}_trimmed.fq.gz"
@@ -99,7 +97,6 @@ rule multiqc2:
   shell:
     "/disk1/home/user_09/anaconda3/envs/LinLong/bin/multiqc {input} \
       -o {params.out_dir} > {log} 2>&1"
-'''
     
 
 
