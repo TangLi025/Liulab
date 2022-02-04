@@ -9,7 +9,7 @@ library(rtracklayer)
 
 #generate bam list
 sample_name <- c("Lysate_input_rep1","Lysate_input_rep2","Result_input_rep1","Result_input_rep2","Lysate_IP_rep1","Lysate_IP_rep2","Result_IP_rep1","Result_IP_rep2")
-setwd("~/LinLong/04_bam_raw/")
+setwd("~/LinLong/04_bam_unique/")
 dir <- getwd()
 fls <- file.path(dir,paste0(sample_name,'.bam'))
 file.exists(fls)
@@ -40,7 +40,7 @@ meta_data <- data.frame(rep = c("rep1","rep2","rep1","rep2"),treatment = c("Lysa
 # create DESeqDataSet
 dds <- DESeqDataSetFromMatrix(countData = express_matrix,colData = meta_data,design = ~ treatment)
 
-dds <- dds[rowSums(counts(dds))>1,]
+dds <- dds[rowSums(counts(dds)>=10)>=4,]
 
 # pca plot
 library(ggplot2)
@@ -98,10 +98,14 @@ res_select[res_select$log2FoldChange >= 0,"express"] <- "UP"
 res_select[res_select$log2FoldChange < 0,"express"] <- "DOWN"
 
 gene_anno <- HeatmapAnnotation(express = res_select[rownames(tpm_matrix),"express"],which = 'row')
-Heatmap(matrix = tpm_matrix,show_column_names =FALSE,show_row_names=FALSE,
+Heatmap(matrix = tpm_matrix,show_column_names =TRUE,show_row_names=FALSE,
         cluster_rows = TRUE,cluster_columns = TRUE,
         top_annotation = cell_anno, left_annotation = gene_anno,
         width = unit(2,'inches'))
+
+write.table(countdata,file="express_matrix.tab")
+write.table(res,file="res.tab")
+write.csv(res_select,file="res_select.csv")
 
 # m6A level
 # scale factor

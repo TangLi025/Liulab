@@ -2,17 +2,15 @@ SAMPLE=["Lysate","Result"]
 TREATMENT=["input","IP"]
 REP=["rep1","rep2"]
 
-DUP=["raw","rmdup"]
-STRAND=["pos","neg"]
+DUP=["raw","dedup"]
 
 rule all:
   input:
     expand("07_deeptools/plotFingerprint/plotFingerprint_{dup}.png",dup=DUP)
 
-
 rule plotFingerprint:
   input:
-    expand("04_bam_{dup}/{sample}_{treatment}_{rep}.bam",group=r'{group}',dup=r'{dup}',sample=SAMPLE,treatment=TREATMENT,rep=REP)
+    expand("04_bam_{dup}/{sample}_{treatment}_{rep}.bam",dup=r'{dup}',sample=SAMPLE,treatment=TREATMENT,rep=REP)
   output:
     png="07_deeptools/plotFingerprint/plotFingerprint_{dup}.png",
     tab="07_deeptools/plotFingerprint/plotFingerprint_{dup}.tab"

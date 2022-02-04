@@ -1,0 +1,4 @@
+Building DAG of jobs...
+MissingInputException in line 36 of /disk1/home/user_09/KAS/snakemake/TI/deeptools.py:
+Missing input files for rule bamCoverage:
+04_bam_rmdup/DMSO_input_rep1.bam

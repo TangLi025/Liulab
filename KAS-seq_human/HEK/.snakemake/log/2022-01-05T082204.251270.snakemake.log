@@ -1,0 +1,4 @@
+Building DAG of jobs...
+MissingInputException in line 11 of /disk1/home/user_09/KAS/snakemake/fastqc.py:
+Missing input files for rule fasterq_dump:
+00_raw_sra/HEK_input_rep1.sra

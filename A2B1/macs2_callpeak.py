@@ -3,7 +3,7 @@ TREATMENT=["input","IP"]
 REP=["rep1","rep2"]
 READ=["1","2"]
 
-DUP=["raw","rmdup"]
+DUP=["raw","dedup"]
 STRAND=["pos","neg"]
 
 rule all:

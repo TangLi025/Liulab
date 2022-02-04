@@ -1,38 +1,38 @@
 rm(list=ls())
 library(ChIPpeakAnno)
 
-CTRL_bed1 <- "/disk1/home/user_09/LinLong/08_bed_filtered/raw/Lysate_rep1_peaks.bed"
-CTRL_bed2 <- "/disk1/home/user_09/LinLong/08_bed_filtered/raw/Lysate_rep2_peaks.bed"
+Lysate_bed1 <- "/disk1/home/user_09/LinLong/08_bed_filtered/dedup/Lysate_rep1_peaks.bed"
+Lysate_bed2 <- "/disk1/home/user_09/LinLong/08_bed_filtered/dedup/Lysate_rep2_peaks.bed"
 
-KO_bed1 <- "/disk1/home/user_09/LinLong/08_bed_filtered/raw/Result_rep1_peaks.bed"
-KO_bed2 <- "/disk1/home/user_09/LinLong/08_bed_filtered/raw/Result_rep2_peaks.bed"
+Result_bed1 <- "/disk1/home/user_09/LinLong/08_bed_filtered/dedup/Result_rep1_peaks.bed"
+Result_bed2 <- "/disk1/home/user_09/LinLong/08_bed_filtered/dedup/Result_rep2_peaks.bed"
 
-CTRL_1 <- ChIPpeakAnno::toGRanges(CTRL_bed1, format="BED", header=FALSE)
-CTRL_2 <- ChIPpeakAnno::toGRanges(CTRL_bed2, format="BED", header=FALSE)
-KO_1 <- ChIPpeakAnno::toGRanges(KO_bed1, format="BED", header=FALSE)
-KO_2 <- ChIPpeakAnno::toGRanges(KO_bed2, format="BED", header=FALSE)
+Lysate_1 <- ChIPpeakAnno::toGRanges(Lysate_bed1, format="BED", header=FALSE)
+Lysate_2 <- ChIPpeakAnno::toGRanges(Lysate_bed2, format="BED", header=FALSE)
+Result_1 <- ChIPpeakAnno::toGRanges(Result_bed1, format="BED", header=FALSE)
+Result_2 <- ChIPpeakAnno::toGRanges(Result_bed2, format="BED", header=FALSE)
 
 
 ## must keep the class exactly same as gr1$score, i.e., numeric.
-CTRL_1$score <- as.numeric(CTRL_1$score) 
-CTRL_2$score <- as.numeric(CTRL_2$score) 
-KO_1$score <- as.numeric(KO_1$score) 
-KO_2$score <- as.numeric(KO_2$score) 
+Lysate_1$score <- as.numeric(Lysate_1$score) 
+Lysate_2$score <- as.numeric(Lysate_2$score) 
+Result_1$score <- as.numeric(Result_1$score) 
+Result_2$score <- as.numeric(Result_2$score) 
 
-ol_CTRL <- findOverlapsOfPeaks(CTRL_1, CTRL_2)
+ol_Lysate <- findOverlapsOfPeaks(Lysate_1, Lysate_2)
 ## add metadata (mean of score) to the overlapping peaks
-ol_CTRL <- addMetadata(ol_CTRL, colNames="score", FUN=base::mean) 
-ol_CTRL$peaklist[["CTRL_1///CTRL_2"]]
-makeVennDiagram(ol_CTRL, fill=c("#a1d8b1", "#edfcc2"), # circle fill color
+ol_Lysate <- addMetadata(ol_Lysate, colNames="score", FUN=base::mean) 
+ol_Lysate$peaklist[["Lysate_1///Lysate_2"]]
+makeVennDiagram(ol_Lysate, fill=c("#a1d8b1", "#edfcc2"), # circle fill color
                 col=c("#D55E00", "#0072B2"), #circle border color
                 cat.col=c("#D55E00", "#0072B2"),# label color, keep same as circle border color
                 cex=3,
                 cat.cex=2) 
 
 
-ol_KO <- findOverlapsOfPeaks(KO_1, KO_2)
-ol_KO <- addMetadata(ol_KO, colNames="score", FUN=base::mean) 
-makeVennDiagram(ol_KO, fill=c("#a1d8b1", "#edfcc2"), # circle fill color
+ol_Result <- findOverlapsOfPeaks(Result_1, Result_2)
+ol_Result <- addMetadata(ol_Result, colNames="score", FUN=base::mean) 
+makeVennDiagram(ol_Result, fill=c("#a1d8b1", "#edfcc2"), # circle fill color
                 col=c("#D55E00", "#0072B2"), #circle border color
                 cat.col=c("#D55E00", "#0072B2"),# label color, keep same as circle border color
                 cex=3,
@@ -40,17 +40,17 @@ makeVennDiagram(ol_KO, fill=c("#a1d8b1", "#edfcc2"), # circle fill color
 
 
 
-CTRL <- ol_CTRL$peaklist[["CTRL_1///CTRL_2"]]
-CTRL_export <- as.data.frame(CTRL)
+Lysate <- ol_Lysate$peaklist[["Lysate_1///Lysate_2"]]
+Lysate_export <- as.data.frame(Lysate)
 
-write.table(CTRL_export[,c(1,2,3,6,5,5)],paste0("~/KAS-METTL/",GROUP,"/06_macs2/broad/KAS-seq_",GROUP,"_CTRL_common_nomodel_peaks.broadPeak"),quote = FALSE,row.names = FALSE,col.names = FALSE,sep="\t")
+write.table(Lysate_export[,c(1,2,3,6,5,5)],"~/LinLong/08_bed_filtered/dedup/Lysate_common_peaks.bed",quote = FALSE,row.names = FALSE,col.names = FALSE,sep="\t")
 
-KO <- ol_KO$peaklist[["KO_1///KO_2"]]
-KO_export <- as.data.frame(KO)
-write.table(KO_export[,c(1,2,3,6,5,5)],paste0("~/KAS-METTL/",GROUP,"/06_macs2/broad/KAS-seq_",GROUP,"_KO_common_nomodel_peaks.broadPeak"),quote = FALSE,row.names = FALSE,col.names = FALSE,sep="\t")
+Result <- ol_Result$peaklist[["Result_1///Result_2"]]
+Result_export <- as.data.frame(Result)
+write.table(Result_export[,c(1,2,3,6,5,5)],"~/LinLong/08_bed_filtered/dedup/Result_common_peaks.bed",quote = FALSE,row.names = FALSE,col.names = FALSE,sep="\t")
 
-ol <- findOverlapsOfPeaks(CTRL, KO)
-CTRL_unique <- ol$peaklist[["CTRL"]]
+ol <- findOverlapsOfPeaks(Lysate, Result)
+Lysate_unique <- ol$peaklist[["Lysate"]]
 
 
 makeVennDiagram(ol, fill=c("#a1d8b1", "#edfcc2"), # circle fill color
@@ -64,61 +64,55 @@ txdb <- makeTxDbFromGFF('~/reference/annotation/mm19/gencode.vM28.annotation.pro
 annoData <- toGRanges(txdb, format='gene')
 annoData[1:2]
 
-overlaps_CTRL <- ol_CTRL$peaklist[["CTRL_1///CTRL_2"]]
-binOverFeature(overlaps_CTRL, annotationData=annoData,
+overlaps_Lysate <- ol_Lysate$peaklist[["Lysate_1///Lysate_2"]]
+binOverFeature(overlaps_Lysate, annotationData=annoData,
                radius=5000, nbins=50, FUN=length, errFun=0,
                xlab="distance from TSS (bp)", ylab="count", 
-               main="Distribution of aggregated peak numbers around TSS(CTRL)")
+               main="Distribution of aggregated peak numbers around TSS(Lysate)")
 
-overlaps_KO <- ol_KO$peaklist[["KO_1///KO_2"]]
-binOverFeature(overlaps_KO, annotationData=annoData,
+overlaps_Result <- ol_Result$peaklist[["Result_1///Result_2"]]
+binOverFeature(overlaps_Result, annotationData=annoData,
                radius=5000, nbins=50, FUN=length, errFun=0,
                xlab="distance from TSS (bp)", ylab="count", 
-               main="Distribution of aggregated peak numbers around TSS(KO)")
+               main="Distribution of aggregated peak numbers around TSS(Result)")
 
-overlaps <- ol$peaklist[["CTRL///KO"]]
+overlaps <- ol$peaklist[["Lysate///Result"]]
 binOverFeature(overlaps, annotationData=annoData,
                radius=5000, nbins=50, FUN=length, errFun=0,
                xlab="distance from TSS (bp)", ylab="count", 
-               main="Distribution of aggregated peak numbers around TSS(KO)")
+               main="Distribution of aggregated peak numbers around TSS(Result)")
 
 ## check the genomic element distribution of the duplicates
 ## the genomic element distribution will indicates the 
 ## the correlation between duplicates.
-peaks_CTRL <- GRangesList(rep1=CTRL_1,
-                     rep2=CTRL_2)
-genomicElementDistribution(peaks_CTRL, 
+peaks_Lysate <- GRangesList(rep1=Lysate_1,
+                     rep2=Lysate_2)
+genomicElementDistribution(peaks_Lysate, 
                            TxDb = txdb,
                            promoterRegion=c(upstream=2000, downstream=2000),
                            geneDownstream=c(upstream=0, downstream=2000))
 
-peaks_KO <- GRangesList(rep1=KO_1,
-                          rep2=KO_2)
-genomicElementDistribution(peaks_KO, 
+peaks_Result <- GRangesList(rep1=Result_1,
+                          rep2=Result_2)
+genomicElementDistribution(peaks_Result, 
                            TxDb = txdb,
                            promoterRegion=c(upstream=2000, downstream=2000),
                            geneDownstream=c(upstream=0, downstream=2000))
 
-peaks <- GRangesList(rep1=CTRL,
-                        rep2=KO)
+peaks <- GRangesList(rep1=Lysate,
+                        rep2=Result)
 genomicElementDistribution(peaks, 
                            TxDb = txdb,
                            promoterRegion=c(upstream=2000, downstream=2000),
                            geneDownstream=c(upstream=0, downstream=2000))
 
-peaks <- GRangesList(rep1=CTRL,
-                        rep2=KO)
-genomicElementDistribution(peaks, 
-                           TxDb = txdb,
-                           promoterRegion=c(upstream=2000, downstream=2000),
-                           geneDownstream=c(upstream=0, downstream=2000))
 
 ## check the genomic element distribution for the overlaps
 ## the genomic element distribution will indicates the 
 ## the best methods for annotation.
 ## The percentages in the legend show the percentage of peaks in 
 ## each category.
-out_CTRL <- genomicElementDistribution(overlaps_CTRL, 
+out_Lysate <- genomicElementDistribution(overlaps_Lysate, 
                                   TxDb = txdb,
                                   promoterRegion=c(upstream=2000, downstream=500),
                                   geneDownstream=c(upstream=0, downstream=5000),
@@ -130,7 +124,7 @@ out_CTRL <- genomicElementDistribution(overlaps_CTRL,
                                     colors = c("#FFE5CC", "#FFCA99", 
                                                "#FFAD65", "#FF8E32")))
 
-out_KO <- genomicElementDistribution(overlaps_KO, 
+out_Result <- genomicElementDistribution(overlaps_Result, 
                                   TxDb = txdb,
                                   promoterRegion=c(upstream=2000, downstream=500),
                                   geneDownstream=c(upstream=0, downstream=5000),
@@ -141,7 +135,7 @@ out_KO <- genomicElementDistribution(overlaps_KO,
                                                "upstream <500b", "TSS - 500b"),
                                     colors = c("#FFE5CC", "#FFCA99", 
                                                "#FFAD65", "#FF8E32")))
-out_CTRL_unique <- genomicElementDistribution(CTRL_unique, 
+out_Lysate_unique <- genomicElementDistribution(Lysate_unique, 
                                   TxDb = txdb,
                                   promoterRegion=c(upstream=2000, downstream=500),
                                   geneDownstream=c(upstream=0, downstream=2000),

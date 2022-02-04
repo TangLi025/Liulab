@@ -1,5 +1,5 @@
-GROUP=["mESC"]
-SAMPLE=["Ctrl","DRB"]
+GROUP=["KAS-seq_ALKBH3","KAS-seq_ALKBH5"]
+SAMPLE=["Ctrl","KO"]
 
 TREATMENT=["input","IP"]
 REP=["rep1","rep2"]

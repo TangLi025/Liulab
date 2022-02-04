@@ -2,14 +2,14 @@ rm(list=ls())
 library(ChIPpeakAnno)
 
 MODE <- "broad"
-GROUP <- "METTL3_2"
+GROUP <- "KAS-seq_ALKBH5"
 TYPE <- "broadPeak"
 
-CTRL_bed1 <- paste0("~/KAS-METTL/",GROUP,"/06_macs2/",MODE,"/KAS-seq_",GROUP,"_CTRL_rep1_peaks.",TYPE)
-CTRL_bed2 <- paste0("~/KAS-METTL/",GROUP,"/06_macs2/",MODE,"/KAS-seq_",GROUP,"_CTRL_rep2_peaks.",TYPE)
+CTRL_bed1 <- paste0("~/KAS-METTL/",GROUP,"/06_macs2/",MODE,"/",GROUP,"_Ctrl_rep1_peaks.",TYPE)
+CTRL_bed2 <- paste0("~/KAS-METTL/",GROUP,"/06_macs2/",MODE,"/",GROUP,"_Ctrl_rep2_peaks.",TYPE)
 
-KO_bed1 <- paste0("~/KAS-METTL/",GROUP,"/06_macs2/",MODE,"/KAS-seq_",GROUP,"_KO_rep1_peaks.",TYPE)
-KO_bed2 <- paste0("~/KAS-METTL/",GROUP,"/06_macs2/",MODE,"/KAS-seq_",GROUP,"_KO_rep2_peaks.",TYPE)
+KO_bed1 <- paste0("~/KAS-METTL/",GROUP,"/06_macs2/",MODE,"/",GROUP,"_KO_rep1_peaks.",TYPE)
+KO_bed2 <- paste0("~/KAS-METTL/",GROUP,"/06_macs2/",MODE,"/",GROUP,"_KO_rep2_peaks.",TYPE)
 
 CTRL_1 <- ChIPpeakAnno::toGRanges(CTRL_bed1, format="BED", header=FALSE)
 CTRL_2 <- ChIPpeakAnno::toGRanges(CTRL_bed2, format="BED", header=FALSE)
@@ -47,11 +47,11 @@ makeVennDiagram(ol_KO, fill=c("#a1d8b1", "#edfcc2"), # circle fill color
 CTRL <- ol_CTRL$peaklist[["CTRL_1///CTRL_2"]]
 CTRL_export <- as.data.frame(CTRL)
 
-write.table(CTRL_export[,c(1,2,3,6,5,5)],paste0("~/KAS-METTL/",GROUP,"/06_macs2/broad/KAS-seq_",GROUP,"_CTRL_common_nomodel_peaks.broadPeak"),quote = FALSE,row.names = FALSE,col.names = FALSE,sep="\t")
+write.table(CTRL_export[,c(1,2,3,6,5,5)],paste0("~/KAS-METTL/",GROUP,"/06_macs2/broad/",GROUP,"_CTRL_common_nomodel_peaks.broadPeak"),quote = FALSE,row.names = FALSE,col.names = FALSE,sep="\t")
 
 KO <- ol_KO$peaklist[["KO_1///KO_2"]]
 KO_export <- as.data.frame(KO)
-write.table(KO_export[,c(1,2,3,6,5,5)],paste0("~/KAS-METTL/",GROUP,"/06_macs2/broad/KAS-seq_",GROUP,"_KO_common_nomodel_peaks.broadPeak"),quote = FALSE,row.names = FALSE,col.names = FALSE,sep="\t")
+write.table(KO_export[,c(1,2,3,6,5,5)],paste0("~/KAS-METTL/",GROUP,"/06_macs2/broad/",GROUP,"_KO_common_nomodel_peaks.broadPeak"),quote = FALSE,row.names = FALSE,col.names = FALSE,sep="\t")
 
 ol <- findOverlapsOfPeaks(CTRL, KO)
 CTRL_unique <- ol$peaklist[["CTRL"]]
@@ -99,13 +99,6 @@ genomicElementDistribution(peaks_CTRL,
 peaks_KO <- GRangesList(rep1=KO_1,
                           rep2=KO_2)
 genomicElementDistribution(peaks_KO, 
-                           TxDb = txdb,
-                           promoterRegion=c(upstream=2000, downstream=2000),
-                           geneDownstream=c(upstream=0, downstream=2000))
-
-peaks <- GRangesList(rep1=CTRL,
-                        rep2=KO)
-genomicElementDistribution(peaks, 
                            TxDb = txdb,
                            promoterRegion=c(upstream=2000, downstream=2000),
                            geneDownstream=c(upstream=0, downstream=2000))
