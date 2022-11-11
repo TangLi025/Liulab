@@ -1,0 +1,160 @@
+nohup: ignoring input
+
+        ==========     _____ _    _ ____  _____  ______          _____  
+        =====         / ____| |  | |  _ \|  __ \|  ____|   /\   |  __ \ 
+          =====      | (___ | |  | | |_) | |__) | |__     /  \  | |  | |
+            ====      \___ \| |  | |  _ <|  _  /|  __|   / /\ \ | |  | |
+              ====    ____) | |__| | |_) | | \ \| |____ / ____ \| |__| |
+        ==========   |_____/ \____/|____/|_|  \_\______/_/    \_\_____/
+	  v2.0.1
+
+//========================== featureCounts setting ===========================\\
+||                                                                            ||
+||             Input files : 16 BAM files                                     ||
+||                           o p0_input_rep1.bam                              ||
+||                           o p0_input_rep2.bam                              ||
+||                           o p0_ip_rep1.bam                                 ||
+||                           o p0_ip_rep2.bam                                 ||
+||                           o p5_input_rep1.bam                              ||
+||                           o p5_input_rep2.bam                              ||
+||                           o p5_ip_rep1.bam                                 ||
+||                           o p5_ip_rep2.bam                                 ||
+||                           o p10_input_rep1.bam                             ||
+||                           o p10_input_rep2.bam                             ||
+||                           o p10_ip_rep1.bam                                ||
+||                           o p10_ip_rep2.bam                                ||
+||                           o rp2_input_rep1.bam                             ||
+||                           o rp2_input_rep2.bam                             ||
+||                           o rp2_ip_rep1.bam                                ||
+||                           o rp2_ip_rep2.bam                                ||
+||                                                                            ||
+||             Output file : repeats_family_counts.tab                        ||
+||                 Summary : repeats_family_counts.tab.summary                ||
+||              Annotation : mm19_repeats_family.saf (SAF)                    ||
+||      Dir for temp files : 06_repeats                                       ||
+||                                                                            ||
+||                 Threads : 50                                               ||
+||                   Level : meta-feature level                               ||
+||              Paired-end : yes                                              ||
+||      Multimapping reads : counted                                          ||
+|| Multi-overlapping reads : not counted                                      ||
+||   Min overlapping bases : 1                                                ||
+||   Min overlapping frac. : 50.0% to reads                                   ||
+||                                                                            ||
+||          Chimeric reads : counted                                          ||
+||        Both ends mapped : required                                         ||
+||         Fragment length : 50 - 600                                         ||
+||                                                                            ||
+\\============================================================================//
+
+//================================= Running ==================================\\
+||                                                                            ||
+|| Load annotation file mm19_repeats_family.saf ...                           ||
+||    Features : 5320771                                                      ||
+||    Meta-features : 62                                                      ||
+||    Chromosomes/contigs : 61                                                ||
+||                                                                            ||
+|| Process BAM file p0_input_rep1.bam...                                      ||
+||    Paired-end reads are included.                                          ||
+||    Total alignments : 41608064                                             ||
+||    Successfully assigned alignments : 12016659 (28.9%)                     ||
+||    Running time : 0.09 minutes                                             ||
+||                                                                            ||
+|| Process BAM file p0_input_rep2.bam...                                      ||
+||    Paired-end reads are included.                                          ||
+||    Total alignments : 68341489                                             ||
+||    Successfully assigned alignments : 19255058 (28.2%)                     ||
+||    Running time : 0.15 minutes                                             ||
+||                                                                            ||
+|| Process BAM file p0_ip_rep1.bam...                                         ||
+||    Paired-end reads are included.                                          ||
+||    Total alignments : 67542625                                             ||
+||    Successfully assigned alignments : 20872605 (30.9%)                     ||
+||    Running time : 0.22 minutes                                             ||
+||                                                                            ||
+|| Process BAM file p0_ip_rep2.bam...                                         ||
+||    Paired-end reads are included.                                          ||
+||    Total alignments : 52345318                                             ||
+||    Successfully assigned alignments : 16496685 (31.5%)                     ||
+||    Running time : 0.16 minutes                                             ||
+||                                                                            ||
+|| Process BAM file p5_input_rep1.bam...                                      ||
+||    Paired-end reads are included.                                          ||
+||    Total alignments : 70516802                                             ||
+||    Successfully assigned alignments : 18250450 (25.9%)                     ||
+||    Running time : 0.20 minutes                                             ||
+||                                                                            ||
+|| Process BAM file p5_input_rep2.bam...                                      ||
+||    Paired-end reads are included.                                          ||
+||    Total alignments : 68367198                                             ||
+||    Successfully assigned alignments : 17747531 (26.0%)                     ||
+||    Running time : 0.28 minutes                                             ||
+||                                                                            ||
+|| Process BAM file p5_ip_rep1.bam...                                         ||
+||    Paired-end reads are included.                                          ||
+||    Total alignments : 75806743                                             ||
+||    Successfully assigned alignments : 19755238 (26.1%)                     ||
+||    Running time : 0.20 minutes                                             ||
+||                                                                            ||
+|| Process BAM file p5_ip_rep2.bam...                                         ||
+||    Paired-end reads are included.                                          ||
+||    Total alignments : 76023704                                             ||
+||    Successfully assigned alignments : 19901086 (26.2%)                     ||
+||    Running time : 0.21 minutes                                             ||
+||                                                                            ||
+|| Process BAM file p10_input_rep1.bam...                                     ||
+||    Paired-end reads are included.                                          ||
+||    Total alignments : 57358338                                             ||
+||    Successfully assigned alignments : 13899303 (24.2%)                     ||
+||    Running time : 0.15 minutes                                             ||
+||                                                                            ||
+|| Process BAM file p10_input_rep2.bam...                                     ||
+||    Paired-end reads are included.                                          ||
+||    Total alignments : 70205279                                             ||
+||    Successfully assigned alignments : 16998221 (24.2%)                     ||
+||    Running time : 0.15 minutes                                             ||
+||                                                                            ||
+|| Process BAM file p10_ip_rep1.bam...                                        ||
+||    Paired-end reads are included.                                          ||
+||    Total alignments : 63139881                                             ||
+||    Successfully assigned alignments : 14848129 (23.5%)                     ||
+||    Running time : 0.17 minutes                                             ||
+||                                                                            ||
+|| Process BAM file p10_ip_rep2.bam...                                        ||
+||    Paired-end reads are included.                                          ||
+||    Total alignments : 69162349                                             ||
+||    Successfully assigned alignments : 16050362 (23.2%)                     ||
+||    Running time : 0.21 minutes                                             ||
+||                                                                            ||
+|| Process BAM file rp2_input_rep1.bam...                                     ||
+||    Paired-end reads are included.                                          ||
+||    Total alignments : 70496756                                             ||
+||    Successfully assigned alignments : 17822602 (25.3%)                     ||
+||    Running time : 0.15 minutes                                             ||
+||                                                                            ||
+|| Process BAM file rp2_input_rep2.bam...                                     ||
+||    Paired-end reads are included.                                          ||
+||    Total alignments : 70107156                                             ||
+||    Successfully assigned alignments : 17264923 (24.6%)                     ||
+||    Running time : 0.14 minutes                                             ||
+||                                                                            ||
+|| Process BAM file rp2_ip_rep1.bam...                                        ||
+||    Paired-end reads are included.                                          ||
+||    Total alignments : 78116866                                             ||
+||    Successfully assigned alignments : 17911021 (22.9%)                     ||
+||    Running time : 0.25 minutes                                             ||
+||                                                                            ||
+|| Process BAM file rp2_ip_rep2.bam...                                        ||
+||    Paired-end reads are included.                                          ||
+||    Total alignments : 66711470                                             ||
+||    Successfully assigned alignments : 15179376 (22.8%)                     ||
+||    Running time : 0.20 minutes                                             ||
+||                                                                            ||
+|| Write the final count table.                                               ||
+|| Write the read assignment summary.                                         ||
+||                                                                            ||
+|| Summary of counting results can be found in file "06_repeats/repeats_fami  ||
+|| ly_counts.tab.summary"                                                     ||
+||                                                                            ||
+\\============================================================================//
+

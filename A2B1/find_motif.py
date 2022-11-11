@@ -37,6 +37,8 @@ rule find_motif:
       {params.genome} {params.out_dir} \
       -rna -p {threads} -len 5,6,7 > {log} 2>&1"
 
+    "/disk1/home/user_09/anaconda3/envs/LinLong/bin/findMotifsGenome.pl {input} {params.genome} {params.out_dir} -rna -p {threads} -len 5,6,7 > {log} 2>&1"
+      
 rule bed_merge:
   input:
     "08_bed_filtered/{dup}/{sample}_rep1_peaks.bed",

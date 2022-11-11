@@ -27,42 +27,56 @@ write.table(GB_bed[,1:6],file="~/reference/annotation/mm19/mm19_Refseq.GB.bed",s
 
 #### 使用multiBigWigSummary BED-file计算reads density
 
-reads_density <- read.delim("~/KAS-seq_mouse/METTL3_3/07_deeptools/reads_density/reads_density_TSS.tab",check.names = FALSE)
-summary(is.na(reads_density))
-reads_density[is.na(reads_density)] <- 0
-reads_density_mean <- mean(reads_density[,6])
+GROUP="YTHDC1"
 
-summary(reads_density[,4] > reads_density_mean*20)
+reads_density_TSS <- read.delim(paste0("~/KAS-seq_mouse/",GROUP,"/07_deeptools/reads_density/reads_density_TSS.tab"),check.names = FALSE)
+summary(is.na(reads_density_TSS))
+reads_density_TSS[is.na(reads_density_TSS)] <- 0
+summary(is.na(reads_density_TSS))
 
-summary <- read.table("~/KAS-METTL/METTL3_3/05_bedtools/bedGraph/bam_summary.txt")
+reads_density_TSS_IP <- data.frame(CTRL_rep1=reads_density_TSS[,4],CTRL_rep2=reads_density_TSS[,5],KO_rep1=reads_density_TSS[,8],KO_rep2=reads_density_TSS[,9])
 
-mean_reads <- mean(summary[,1])
+mean(reads_density_TSS_IP[,1])
+mean(reads_density_TSS_IP[,2])
+mean(reads_density_TSS_IP[,3])
+mean(reads_density_TSS_IP[,4])
 
-TSS <- read.delim("~/KAS-METTL/METTL3_3/07_deeptools/computeMatrix/KO_input_rep1_TSS.tab", header=T, skip=2)
-TSS <- TSS[,-13]
-gene_body <- read.delim("~/KAS-METTL/METTL3_3/07_deeptools/computeMatrix/KO_input_rep1_body.tab", header=T, skip=2)
-gene_body <- gene_body[,-21]
+#reads_density_TSS_rep <- data.frame(CTRL_IP=(reads_density_TSS[,4]+reads_density_TSS[,5])/2,CTRL_input=(reads_density_TSS[,6]+reads_density_TSS[,7])/2)
 
-density_mean <- data.frame(apply(TSS,1,mean),apply(gene_body,1,mean))
+reads_density_GB <- read.delim(paste0("~/KAS-seq_mouse/",GROUP,"/07_deeptools/reads_density/reads_density_GB.tab"),check.names = FALSE)
+summary(is.na(reads_density_GB))
+reads_density_GB[is.na(reads_density_GB)] <- 0
+summary(is.na(reads_density_GB))
 
-TSS_mean <- mean(density_mean[,1])
+reads_density_GB_IP <- data.frame(CTRL_rep1=reads_density_GB[,4],CTRL_rep2=reads_density_GB[,5],KO_rep1=reads_density_GB[,8],KO_rep2=reads_density_GB[,9])
 
-GB_mean <- mean(density_mean[,2])
+mean(reads_density_GB_IP[,1])
+mean(reads_density_GB_IP[,2])
+mean(reads_density_GB_IP[,3])
+mean(reads_density_GB_IP[,4])
 
-bw <- import("~/KAS-METTL/METTL3_3/05_bedtools/bigWig/KAS-seq_METTL3_3_KO_input_rep1_ext.bw")
+transcription_state <- matrix(nrow=4,ncol=4)
+for (i in 1:4){
+  transcription_state[1,i] <- as.numeric(summary(reads_density_TSS_IP[,i]>=5 & reads_density_GB_IP[,i]>=2.5)[3])
+  
+  transcription_state[2,i] <- as.numeric(summary(reads_density_TSS_IP[,i]>=5 & reads_density_GB_IP[,i]<2.5)[3])
+  
+  transcription_state[3,i] <- as.numeric(summary(reads_density_TSS_IP[,i]<5 & reads_density_GB_IP[,i]>=2.5)[3])
+  transcription_state[4,i] <- as.numeric(summary(reads_density_TSS_IP[,i]<5 & reads_density_GB_IP[,i]<2.5)[3])
+}
+
+colnames(transcription_state) <- c("CTRL1","CTRL2","KO1","KO2")
+rownames(transcription_state) <- c("class_1","class_2","class_3","class_4")
+
+library(tidyverse)
+library(reshape2)
+transcription_state_t <- melt(transcription_state)
+colnames(transcription_state_t) <- c("transcription_state","sample","gene_number")
 
 
-mean_total <- sum(bw$score*bw@ranges@width)/2494787188/50
+library(ggplot2)
 
-class1_gene <- density_mean[density_mean[,1]>=mean_total*20 & density_mean[,2]>=mean_total*10,]
-class2_gene <- density_mean[density_mean[,1]>=mean_total*20 & density_mean[,2]<mean_total*10,]
-class3_gene <- density_mean[density_mean[,1]<mean_total*20 & density_mean[,2]>=mean_total*10,]
-class4_gene <- density_mean[density_mean[,1]<mean_total*20 & density_mean[,2]<mean_total*10,]
-
-
-
-
-
-
-
+ggplot(data=transcription_state_t)+
+  geom_col(mapping = aes(x=transcription_state,y=gene_number,fill=sample),position = 'dodge')+
+  labs(title = GROUP)
 

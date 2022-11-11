@@ -9,7 +9,7 @@ library(rtracklayer)
 
 #generate bam list
 sample_name <- c("Lysate_input_rep1","Lysate_input_rep2","Result_input_rep1","Result_input_rep2","Lysate_IP_rep1","Lysate_IP_rep2","Result_IP_rep1","Result_IP_rep2")
-setwd("~/LinLong/04_bam_unique/")
+setwd("~/LinLong/04_bam_raw/")
 dir <- getwd()
 fls <- file.path(dir,paste0(sample_name,'.bam'))
 file.exists(fls)
@@ -83,6 +83,7 @@ tpm_matrix <- do.call(cbind,base::lapply(colnames(express_matrix),FUN = function
   return(exp(rate - denom + log(1e6)))
 }))
 colnames(tpm_matrix) <- colnames(express_matrix)
+rownames(tpm_matrix) <- rownames(express_matrix)
 table(colSums(tpm_matrix))
 
 # heatmap
@@ -107,6 +108,9 @@ write.table(countdata,file="express_matrix.tab")
 write.table(res,file="res.tab")
 write.csv(res_select,file="res_select.csv")
 
+countdata <- read.table("04_bam_raw/express_matrix.tab")
+
+
 # m6A level
 # scale factor
 total_reads <- colSums(countdata)
@@ -114,7 +118,9 @@ total_reads <- colSums(countdata)
 library(edgeR)
 myCPM <- cpm(countdata)
 
-compare <- data.frame(Lysate_rep1=log2(myCPM[,5]/myCPM[,1]*0.93),Lysate_rep2=log2(myCPM[,6]/myCPM[,2]*1.07),Result_rep1=log2(myCPM[,7]/myCPM[,3]*0.77),Result_rep2=log2(myCPM[,8]/myCPM[,4]*0.77))
+compare_spike_in <- data.frame(Lysate_rep1=log2(myCPM[,5]/myCPM[,1]*0.93),Lysate_rep2=log2(myCPM[,6]/myCPM[,2]*1.07),Result_rep1=log2(myCPM[,7]/myCPM[,3]*0.76),Result_rep2=log2(myCPM[,8]/myCPM[,4]*0.77))
+
+compare <- data.frame(Lysate_rep1=log2(myCPM[,5]/myCPM[,1]),Lysate_rep2=log2(myCPM[,6]/myCPM[,2]),Result_rep1=log2(myCPM[,7]/myCPM[,3]),Result_rep2=log2(myCPM[,8]/myCPM[,4]))
 
 select_m6A <- as.matrix(compare[rownames(compare) %in% rownames(tpm_matrix),])
 

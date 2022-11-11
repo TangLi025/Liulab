@@ -24,16 +24,16 @@ library("RADAR")
 # In the example data, the RNA has been sonicated into ~150nt fragment before IP and library preparation.
 
 samplename <- c("Lysate.rep1","Lysate.rep2","Result.rep1","Result.rep2")
-setwd("~/LinLong/20211230")
+setwd("~/LinLong")
 lovo_radar <- countReads(
   samplenames = samplename[1:4],  # prefix for bam files
-  gtf = "/disk1/home/user_09/reference/annotation/mm9/gencode.vM1.annotation.gtf",
-  bamFolder = "./04_bam_dedup",
+  gtf = "/disk1/home/user_09/reference/annotation/mm19/gencode.vM28.annotation.gtf",
+  bamFolder = "./04_bam_raw",
   modification = "IP", 
   strandToKeep = "opposite",
-  threads = 50,
-  binSize = 100,
-  outputDir='./16_diff_peaks/dedup',
+  threads = 40,
+  binSize = 50,
+  outputDir='./16_diff_peaks/raw',
   fragmentLength = 150,
   paired = TRUE,
   saveOutput = TRUE
@@ -64,7 +64,7 @@ lovo_radar <- filterBins( lovo_radar ,minCountsCutOff = 15)
 # Now we have the pre-processed read counts matrix for testing differential methylation.
 # lovo_radar <- diffIP(lovo_radar)
 # if using linux or mac, you can also use multi-thread mode
-lovo_radar <- diffIP_parallel(lovo_radar, thread = 40)
+lovo_radar <- diffIP_parallel(lovo_radar, thread = 10)
 head(lovo_radar@test.est)
 
 # The code above run test on the effect of predictor variable on the methylation level, 
@@ -81,19 +81,21 @@ plotPCAfromMatrix(top_bins,group = unlist(variable(lovo_radar)) )
 # Therefore, we do a post-processing to merge significant neighboring bins after the test to obtain a final list of differential peaks.
 # We merge the p-value of connecting bins by fisher’s method and report the max beta from neighbouring bins.
 # Here, we use FDR<0.1 and log fold change > 0.5 as default cutoff for selecting significant bins. 
-res <- reportResult( lovo_radar, cutoff = 0.5, Beta_cutoff = 0, threads = 40 ) # 5分半
+res <- reportResult( lovo_radar, cutoff = 0.01, Beta_cutoff = 0.5, threads = 100 ) # 5分半
 
-result <- results(res)
+
+result <- RADAR::results(res)
+#write.table(result,"16_diff_peaks/raw/diff_peak_RADAR_50.tab")
+write.table(result,"16_diff_peaks/raw/diff_peak_RADAR_log2FC.tab")
+
 plotHeatMap(res)
-
-
 
 # we can extract the final result as an table (in BED12 format) 
 # for the genomic location of the differential methylated peaks with p-values and log fold changes.
-lovo_res <- results( res)
+lovo_res <- RADAR::results( res)
 head(lovo_res)
 length(unique(lovo_res$name))
 tmp=lovo_res[abs(lovo_res$logFC)>=1,]
 length(unique(tmp$name))
 lovo.m6a=tmp
-write.csv(lovo.m6a,file='./16_diff_peaks/hytrogel_diff_peaks_log2fc1_fdr0.35.csv',quote = F,row.names = F)
+write.csv(lovo.m6a,file='./16_diff_peaks/hytrogel_diff_peaks_log2fc1_fdr0.05.csv',quote = F,row.names = F)

@@ -5,11 +5,11 @@ MODE <- "broad"
 GROUP <- "KAS-seq_ALKBH5"
 TYPE <- "broadPeak"
 
-CTRL_bed1 <- paste0("~/KAS-METTL/",GROUP,"/06_macs2/",MODE,"/",GROUP,"_Ctrl_rep1_peaks.",TYPE)
-CTRL_bed2 <- paste0("~/KAS-METTL/",GROUP,"/06_macs2/",MODE,"/",GROUP,"_Ctrl_rep2_peaks.",TYPE)
+CTRL_bed1 <- "/disk1/home/user_08/custom/HepG2-caJ_rep1_peaks.bed"
+CTRL_bed2 <- "/disk1/home/user_08/custom/HepG2-caJ_rep2_peaks.bed"
 
-KO_bed1 <- paste0("~/KAS-METTL/",GROUP,"/06_macs2/",MODE,"/",GROUP,"_KO_rep1_peaks.",TYPE)
-KO_bed2 <- paste0("~/KAS-METTL/",GROUP,"/06_macs2/",MODE,"/",GROUP,"_KO_rep2_peaks.",TYPE)
+KO_bed1 <- "/disk1/home/user_08/custom/HepG2-toN_rep1_peaks.bed"
+KO_bed2 <- "/disk1/home/user_08/custom/HepG2-toN_rep2_peaks.bed"
 
 CTRL_1 <- ChIPpeakAnno::toGRanges(CTRL_bed1, format="BED", header=FALSE)
 CTRL_2 <- ChIPpeakAnno::toGRanges(CTRL_bed2, format="BED", header=FALSE)
@@ -55,6 +55,7 @@ write.table(KO_export[,c(1,2,3,6,5,5)],paste0("~/KAS-METTL/",GROUP,"/06_macs2/br
 
 ol <- findOverlapsOfPeaks(CTRL, KO)
 CTRL_unique <- ol$peaklist[["CTRL"]]
+KO_unique <- ol$peaklist[["KO"]]
 
 
 makeVennDiagram(ol, fill=c("#a1d8b1", "#edfcc2"), # circle fill color
@@ -64,7 +65,7 @@ makeVennDiagram(ol, fill=c("#a1d8b1", "#edfcc2"), # circle fill color
                 cat.cex=2) 
 
 library(GenomicFeatures)
-txdb <- makeTxDbFromGFF('~/reference/annotation/mm19/gencode.vM28.annotation.protein_coding.chr.gtf')
+txdb <- makeTxDbFromGFF('~/reference/annotation/hg38/gencode.v39.annotation.gtf')
 annoData <- toGRanges(txdb, format='gene')
 annoData[1:2]
 
@@ -117,39 +118,50 @@ genomicElementDistribution(peaks,
 ## each category.
 out_CTRL <- genomicElementDistribution(overlaps_CTRL, 
                                   TxDb = txdb,
-                                  promoterRegion=c(upstream=2000, downstream=500),
-                                  geneDownstream=c(upstream=0, downstream=5000),
+                                  promoterRegion=c(upstream=1000, downstream=100),
+                                  geneDownstream=c(upstream=0, downstream=2000),
                                   promoterLevel=list(
                                     # from 5' -> 3', fixed precedence 3' -> 5'
-                                    breaks = c(-2000, -1000, -500, 0, 500),
-                                    labels = c("upstream 1-2Kb", "upstream 0.5-1Kb", 
-                                               "upstream <500b", "TSS - 500b"),
-                                    colors = c("#FFE5CC", "#FFCA99", 
+                                    breaks = c( -1000, -500, 0, 100),
+                                    labels = c( "upstream 0.5-1Kb", 
+                                               "upstream <500b", "TSS - 100b"),
+                                    colors = c("#FFE5CC", 
                                                "#FFAD65", "#FF8E32")))
 
 out_KO <- genomicElementDistribution(overlaps_KO, 
                                   TxDb = txdb,
-                                  promoterRegion=c(upstream=2000, downstream=500),
-                                  geneDownstream=c(upstream=0, downstream=5000),
-                                  promoterLevel=list(
-                                    # from 5' -> 3', fixed precedence 3' -> 5'
-                                    breaks = c(-2000, -1000, -500, 0, 500),
-                                    labels = c("upstream 1-2Kb", "upstream 0.5-1Kb", 
-                                               "upstream <500b", "TSS - 500b"),
-                                    colors = c("#FFE5CC", "#FFCA99", 
-                                               "#FFAD65", "#FF8E32")))
-out_CTRL_unique <- genomicElementDistribution(CTRL_unique, 
-                                  TxDb = txdb,
-                                  promoterRegion=c(upstream=2000, downstream=500),
+                                  promoterRegion=c(upstream=1000, downstream=100),
                                   geneDownstream=c(upstream=0, downstream=2000),
                                   promoterLevel=list(
                                     # from 5' -> 3', fixed precedence 3' -> 5'
-                                    breaks = c(-2000, -1000, -500, 0, 500),
-                                    labels = c("upstream 1-2Kb", "upstream 0.5-1Kb", 
-                                               "upstream <500b", "TSS - 500b"),
-                                    colors = c("#FFE5CC", "#FFCA99", 
+                                    breaks = c( -1000, -500, 0, 100),
+                                    labels = c( "upstream 0.5-1Kb", 
+                                               "upstream <500b", "TSS - 100b"),
+                                    colors = c("#FFE5CC",
+                                               "#FFAD65", "#FF8E32")))
+out_CTRL_unique <- genomicElementDistribution(CTRL_unique, 
+                                  TxDb = txdb,
+                                  promoterRegion=c(upstream=1000, downstream=100),
+                                  geneDownstream=c(upstream=0, downstream=2000),
+                                  promoterLevel=list(
+                                    # from 5' -> 3', fixed precedence 3' -> 5'
+                                    breaks = c(-1000, -500, 0, 100),
+                                    labels = c( "upstream 0.5-1Kb", 
+                                               "upstream <500b", "TSS - 100b"),
+                                    colors = c("#FFE5CC", 
                                                "#FFAD65", "#FF8E32")))
 
+out_KO_unique <- genomicElementDistribution(KO_unique, 
+                                              TxDb = txdb,
+                                              promoterRegion=c(upstream=1000, downstream=100),
+                                              geneDownstream=c(upstream=0, downstream=2000),
+                                              promoterLevel=list(
+                                                # from 5' -> 3', fixed precedence 3' -> 5'
+                                                breaks = c(-1000, -500, 0, 500),
+                                                labels = c("upstream 0.5-1Kb", 
+                                                           "upstream <500b", "TSS - 500b"),
+                                                colors = c("#FFE5CC",
+                                                           "#FFAD65", "#FF8E32")))
 
 out <- genomicElementDistribution(overlaps, 
                                               TxDb = txdb,

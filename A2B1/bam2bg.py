@@ -1,15 +1,16 @@
-GROUP=["mESC_KAS-seq"]
-SAMPLE=["mESC"]
+SAMPLE=["Lysate","Result"]
 
 TREATMENT=["input","IP"]
 REP=["rep1","rep2"]
+
+DUP=["raw","dedup"]
 
 GENOME="/disk1/home/user_09/reference/genome/GRCm39.genome.fa"
 GENOME_INDEX="/disk1/home/user_09/reference/genome/GRCm39.genome.fa.fai"
 
 rule all:
   input:
-    expand("{group}/05_bedtools/bedGraph/{sample}_{treatment}_{rep}_ext.bg",group=GROUP,sample=SAMPLE,treatment=TREATMENT,rep=REP)
+    expand("05_bedtools/{dup}/bedGraph/{sample}.{rep}.{treatment}_ext.bg",dup=DUP,sample=SAMPLE,treatment=TREATMENT,rep=REP)
   
 rule genome_index:
   input:
@@ -21,23 +22,22 @@ rule genome_index:
 
 rule bam2bed:
   input:
-    "{group}/04_bam_unique/{sample}_{treatment}_{rep}.bam"
+    "04_bam_{dup}/{sample}.{rep}.{treatment}.bam"
   output:
-    "{group}/05_bedtools/bed/{sample}_{treatment}_{rep}.bed"
+    "05_bedtools/{dup}/bed/{sample}.{rep}.{treatment}.bed"
   log:
-    "{group}/logs/bam2bed/{sample}_{treatment}_{rep}.log"
-  threads: 1
+    "logs/bam2bed/{dup}/{sample}.{rep}.{treatment}.log"
   shell:
     "/disk1/home/user_09/anaconda3/envs/bedtools/bin/bedtools bamtobed -i {input} \
       | sort -k 1,1 1> {output} 2> {log}"
       
 rule bed_extend:
   input:
-    "{group}/05_bedtools/bed/{sample}_{treatment}_{rep}.bed"
+    "05_bedtools/{dup}/bed/{sample}.{rep}.{treatment}.bed"
   output:
-    "{group}/05_bedtools/bed_extend/{sample}_{treatment}_{rep}_ext.bed"
+    "05_bedtools/{dup}/bed_extend/{sample}.{rep}.{treatment}_ext.bed"
   log:
-    "{group}/logs/bed_extend/{sample}_{treatment}_{rep}.log"
+    "logs/bed_extend/{dup}/{sample}.{rep}.{treatment}.log"
   shell:
     r"""
     awk '$3-150>0 {{if ($6~"+") printf("%s\t%d\t%d\t%s\t%d\t%s\n",$1,$2,$2+150,$4,$5,$6); else if ($6~"-") printf("%s\t%d\t%d\t%s\t%d\t%s\n",$1,$3-150,$3,$4,$5,$6)}}' \
@@ -46,13 +46,12 @@ rule bed_extend:
 
 rule bed2bedGraph:
   input:
-    "{group}/05_bedtools/bed_extend/{sample}_{treatment}_{rep}_ext.bed",
+    "05_bedtools/{dup}/bed_extend/{sample}.{rep}.{treatment}_ext.bed",
     GENOME_INDEX
   output:
-    "{group}/05_bedtools/bedGraph/{sample}_{treatment}_{rep}_ext.bg"
+    "05_bedtools/{dup}/bedGraph/{sample}.{rep}.{treatment}_ext.bg"
   log:
-    "{group}/logs/bed2bedGraph/{sample}_{treatment}_{rep}.log"
-  threads: 1
+    "logs/bed2bedGraph/{dup}/{sample}.{rep}.{treatment}.log"
   shell:
     "/disk1/home/user_09/anaconda3/envs/bedtools/bin/bedtools genomecov -i {input[0]} \
       -bg -g {input[1]} \

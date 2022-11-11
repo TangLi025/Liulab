@@ -1,0 +1,206 @@
+#expand("07_deeptools/plotFingerprint/{sample}_KAS-seq_plotFingerprint_{dup}.png",sample=SAMPLE,dup=DUP),
+#expand("07_deeptools/computeGCBias/{sample}_{treatment}_{rep}_{dup}.txt",sample=SAMPLE,treatment=TREATMENT,rep=REP,dup=DUP),
+#expand("07_deeptools/multiBigwigSummary/{sample}.npz",sample=SAMPLE),
+#expand("07_deeptools/plotCorrelation/{sample}.png",sample=SAMPLE),
+#expand("07_deeptools/plotCorrelation/{sample}.tab",sample=SAMPLE),
+#expand("07_deeptools/computeMatrix/{sample}.mat.gz",sample=SAMPLE),
+#expand("07_deeptools/computeMatrix/{sample}.tab",sample=SAMPLE),
+#expand("07_deeptools/computeMatrix/{sample}.bed",sample=SAMPLE),
+#expand("07_deeptools/plotProfile/{sample}.png",sample=SAMPLE),
+#expand("07_deeptools/plotHeatmap/{sample}.png",sample=SAMPLE),
+#"07_deeptools/plotHeatmap/compare.png",
+#"07_deeptools/plotProfile/compare_input.png"
+
+
+rule computeMatrix_distribution_compare:
+  input:
+    bw=expand("07_deeptools/bamCoverage/{sample}_IP_merge.bw",sample=SAMPLE)
+  output:
+    mat="07_deeptools/computeMatrix/compare.mat.gz",
+    tab="07_deeptools/computeMatrix/compare.tab",
+    bed="07_deeptools/computeMatrix/compare.bed"
+  log:
+    "logs/computeMatrix_distribution/compare.log"
+  params:
+    gtf=GTF,
+    blacklist=BLACKLIST,
+    labels=["Native","DRB","TRIP"]
+  threads: 45
+  shell:
+    "/disk/user_09/anaconda3/envs/deeptools/bin/computeMatrix scale-regions \
+      --regionsFileName {params.gtf} \
+      --scoreFileName {input.bw} \
+      --outFileName {output.mat} \
+      --outFileNameMatrix {output.tab} \
+      --outFileSortedRegions {output.bed} \
+      --regionBodyLength 6000 \
+      --beforeRegionStartLength 3000  \
+      --afterRegionStartLength 3000 \
+      --binSize 10 \
+      --skipZeros \
+      --blackListFileName {params.blacklist} \
+      --samplesLabel {params.labels} \
+      --numberOfProcessors {threads} \
+      --missingDataAsZero \
+       > {log} 2>&1"
+
+rule bamCoverage:
+  input:
+    "/disk/user_09/Data/user_08_TC1/05_bam_change_index_hisat2/01_bam_sorted/11_bam_merge/{sample}_{treatment}_{rep}.bam"
+  output:
+    bw="07_deeptools/bamCoverage/{sample}_{treatment}_{rep}.bw"
+  log:
+    "logs/bamCoverage/{sample}_{treatment}_{rep}.log"
+  threads: 10
+  shell:
+    "/disk/user_09/anaconda3/envs/deeptools/bin/bamCoverage \
+      -b {input} \
+      --outFileName {output.bw} \
+      --outFileFormat bigwig \
+      --numberOfProcessors {threads} \
+      --effectiveGenomeSize 2494787188 \
+      --normalizeUsing RPKM \
+       > {log} 2>&1"
+
+rule bigwigCompare:
+  input:
+    ip="07_deeptools/bamCoverage/{sample}_ip_{rep}.bw",
+    input="07_deeptools/bamCoverage/{sample}_input_{rep}.bw"
+  output:
+    bw="07_deeptools/bigwigCompare/{sample}_{rep}.bw"
+  log:
+    "logs/bigwigCompare/{sample}_{rep}.log"
+  threads: 10
+  shell:
+    "/disk/user_09/anaconda3/envs/deeptools/bin/bigwigCompare  \
+      -b1 {input.ip} \
+      -b2 {input.input} \
+      --skipZeroOverZero \
+      --skipNAs \
+      --operation log2 \
+      --outFileName {output.bw} \
+      --outFileFormat bigwig \
+      --numberOfProcessors {threads} \
+       > {log} 2>&1"
+
+
+
+rule plotHeatmap:
+  input:
+    mat="07_deeptools/computeMatrix/{sample}.mat.gz"
+  output:
+    png="07_deeptools/plotHeatmap/{sample}.png"
+  log:
+    "logs/plotHeatmap/{sample}.log"
+  params:
+    genes="genes"
+  threads: 1
+  shell:
+    "/disk/user_09/anaconda3/envs/deeptools/bin/plotHeatmap \
+      --perGroup \
+      --matrixFile {input.mat} \
+      --outFileName {output.png} \
+       > {log} 2>&1"
+
+rule computeMatrix_distribution_compare:
+  input:
+    bw=expand("07_deeptools/bamCoverage/{sample}_IP_merge.bw",sample=SAMPLE)
+  output:
+    mat="07_deeptools/computeMatrix/compare.mat.gz",
+    tab="07_deeptools/computeMatrix/compare.tab",
+    bed="07_deeptools/computeMatrix/compare.bed"
+  log:
+    "logs/computeMatrix_distribution/compare.log"
+  params:
+    gtf=GTF,
+    blacklist=BLACKLIST,
+    labels=["Native","DRB","TRIP"]
+  threads: 45
+  shell:
+    "/disk/user_09/anaconda3/envs/deeptools/bin/computeMatrix scale-regions \
+      --regionsFileName {params.gtf} \
+      --scoreFileName {input.bw} \
+      --outFileName {output.mat} \
+      --outFileNameMatrix {output.tab} \
+      --outFileSortedRegions {output.bed} \
+      --regionBodyLength 6000 \
+      --beforeRegionStartLength 3000  \
+      --afterRegionStartLength 3000 \
+      --binSize 10 \
+      --skipZeros \
+      --blackListFileName {params.blacklist} \
+      --samplesLabel {params.labels} \
+      --numberOfProcessors {threads} \
+      --missingDataAsZero \
+       > {log} 2>&1"
+
+rule plotHeatmap_compare:
+  input:
+    mat="07_deeptools/computeMatrix/compare.mat.gz"
+  output:
+    png="07_deeptools/plotHeatmap/compare.png"
+  log:
+    "logs/plotHeatmap/compare.log"
+  params:
+    genes="genes",
+    what_to_show="'heatmap and colorbar'"
+  threads: 1
+  shell:
+    "/disk/user_09/anaconda3/envs/deeptools/bin/plotHeatmap \
+      --sortUsingSamples 1 \
+      --whatToShow {params.what_to_show} \
+      --matrixFile {input.mat} \
+      --outFileName {output.png} \
+      --colorMap 'Blues' \
+       > {log} 2>&1"
+       
+rule computeMatrix_distribution_compare_input:
+  input:
+    expand("07_deeptools/bamCoverage/{sample}_IP_merge.bw",sample=SAMPLE),
+    "07_deeptools/bamCoverage/DMSO_input_merge.bw"
+  output:
+    mat="07_deeptools/computeMatrix/compare_input.mat.gz",
+    tab="07_deeptools/computeMatrix/compare_input.tab",
+    bed="07_deeptools/computeMatrix/compare_input.bed"
+  log:
+    "logs/computeMatrix_distribution/compare_input.log"
+  params:
+    gtf=GTF_protein_coding,
+    blacklist=BLACKLIST,
+    labels=["Native","DRB","TRIP","input"]
+  threads: 45
+  shell:
+    "/disk/user_09/anaconda3/envs/deeptools/bin/computeMatrix scale-regions \
+      --regionsFileName {params.gtf} \
+      --scoreFileName {input} \
+      --outFileName {output.mat} \
+      --outFileNameMatrix {output.tab} \
+      --outFileSortedRegions {output.bed} \
+      --regionBodyLength 6000 \
+      --beforeRegionStartLength 3000  \
+      --afterRegionStartLength 3000 \
+      --binSize 10 \
+      --skipZeros \
+      --blackListFileName {params.blacklist} \
+      --samplesLabel {params.labels} \
+      --numberOfProcessors {threads} \
+      --missingDataAsZero \
+      --metagene \
+       > {log} 2>&1"      
+       
+rule plotProfile_compare_input:
+  input:
+    mat="07_deeptools/computeMatrix/compare_input.mat.gz"
+  output:
+    png="07_deeptools/plotProfile/compare_input.png"
+  log:
+    "logs/plotProfile/compare_input.log"
+  params:
+    genes="genes"
+  threads: 1
+  shell:
+    "/disk/user_09/anaconda3/envs/deeptools/bin/plotProfile \
+      --perGroup \
+      --matrixFile {input.mat} \
+      --outFileName {output.png} \
+       > {log} 2>&1"
